@@ -1,0 +1,7 @@
+id,title,theme,area,value,unit,as_of,description,source_url,discussion_key
+pop_zeze_total,膳所学区の総人口,population,zeze,15437,人,2023-03-31,膳所学区の現在の総人口,http://example.com/zeze_population.pdf,pop_total_zeze
+pop_zeze_aging_rate,高齢化率（65歳以上）,population,zeze,30.1,%,2023-03-31,3人に1人が65歳以上,http://example.com/zeze_population.pdf,pop_aging_rate_zeze
+pop_zeze_75_rate,75歳以上人口割合,population,zeze,16.3,%,2023-03-31,後期高齢者の割合が高い,http://example.com/zeze_population.pdf,pop_75plus_rate_zeze
+pop_zeze_households,世帯数,population,zeze,7420,世帯,2023-03-31,単身・高齢者世帯の増加が想定される,http://example.com/zeze_population.pdf,pop_households_zeze
+pop_zeze_foreigners,外国籍住民数,population,zeze,308,人,2023-03-31,多文化対応の必要性,http://example.com/zeze_population.pdf,pop_foreigners_zeze
+pop_zeze_youth_decline,若年層の減少,population,zeze,減少傾向,傾向,2023-03-31,若年人口の流出が続いている,http://example.com/zeze_population.pdf,pop_youth_decline_zeze

@@ -1,0 +1,51 @@
+{
+  "pop_aging_rate_zeze": {
+    "discussion_key": "pop_aging_rate_zeze",
+    "title": "高齢化率（65歳以上）",
+    "posts": [
+      {
+        "id": "post_1767524565521",
+        "discussion_key": "pop_aging_rate_zeze",
+        "content": "📊 **高齢化率（65歳以上）**\n\n- **値**: 30.1 %\n- **時点**: 2023-03-31\n- **出典**: http://example.com/zeze_population.pdf\n\n3人に1人が65歳以上",
+        "created_at": "2026-01-04T11:02:45.522Z",
+        "is_auto_generated": true
+      },
+      {
+        "id": "post_1767524590699",
+        "discussion_key": "pop_aging_rate_zeze",
+        "content": "高齢者が多いのはいいとして、子どもや新規人口が増えてないのがあれだよね",
+        "created_at": "2026-01-04T11:03:10.699Z",
+        "is_auto_generated": false
+      },
+      {
+        "id": "post_1767524602689",
+        "discussion_key": "pop_aging_rate_zeze",
+        "content": "どうやったら新しい人が増えるんだろう？",
+        "created_at": "2026-01-04T11:03:22.689Z",
+        "is_auto_generated": false
+      }
+    ],
+    "created_at": "2026-01-04T11:02:45.522Z"
+  },
+  "pop_total_zeze": {
+    "discussion_key": "pop_total_zeze",
+    "title": "膳所学区の総人口",
+    "posts": [
+      {
+        "id": "post_1767524606940",
+        "discussion_key": "pop_total_zeze",
+        "content": "📊 **膳所学区の総人口**\n\n- **値**: 15437 人\n- **時点**: 2023-03-31\n- **出典**: http://example.com/zeze_population.pdf\n\n膳所学区の現在の総人口",
+        "created_at": "2026-01-04T11:03:26.940Z",
+        "is_auto_generated": true
+      },
+      {
+        "id": "post_1767524609696",
+        "discussion_key": "pop_total_zeze",
+        "content": "あああ",
+        "created_at": "2026-01-04T11:03:29.696Z",
+        "is_auto_generated": false
+      }
+    ],
+    "created_at": "2026-01-04T11:03:26.940Z"
+  }
+}
