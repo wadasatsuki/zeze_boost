@@ -432,7 +432,7 @@ function DiscussionDetail({
       </div>
 
       {/* Bottom action bar - fixed at bottom */}
-      <div className="fixed bottom-16 md:bottom-0 left-0 md:left-[50%] right-0 border-t bg-white z-10">
+      <div className="fixed bottom-16 md:bottom-0 left-0 md:left-[calc(50%+2rem)] right-0 border-t bg-white z-10">
         {/* Image preview */}
         {imagePreview && (
           <div className="px-3 pt-3 pb-0">
