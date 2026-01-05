@@ -143,7 +143,7 @@ function DataPageContent() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Page header */}
       <header className="bg-white border-b p-3 md:p-4">
-        <h1 className="text-lg md:text-xl font-bold">データやマップから議論を始めよう</h1>
+        <h1 className="text-lg md:text-xl font-bold text-gray-900">データやマップから議論を始めよう</h1>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -157,7 +157,7 @@ function DataPageContent() {
           <div className={`flex-1 p-3 md:p-4 overflow-y-auto ${(showCardPanel || showAreaPanel) ? 'pb-52 md:pb-4' : ''}`}>
             {/* Map section */}
             <div className="mb-4">
-              <h2 className="text-base md:text-lg font-bold mb-2">エリアで議論を始める</h2>
+              <h2 className="text-base md:text-lg font-bold mb-2 text-gray-900">エリアで議論を始める</h2>
               <AreaMap
                 onAreaSelected={handleAreaSelected}
                 selectedBounds={selectedAreaBounds}

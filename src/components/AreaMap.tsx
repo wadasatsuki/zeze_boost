@@ -219,7 +219,7 @@ export default function AreaMap({ onAreaSelected, selectedBounds, onClearSelecti
           </button>
         )}
       </div>
-      <p className="mt-1 text-xs text-gray-400">
+      <p className="mt-1 text-xs text-gray-600">
         「エリアを選択」をタップして、地図上でドラッグしてエリアを選んでください
       </p>
     </div>
