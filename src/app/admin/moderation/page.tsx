@@ -199,7 +199,7 @@ export default function ModerationPage() {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm">
-          <h1 className="text-xl font-bold mb-6 text-center">管理者ログイン</h1>
+          <h1 className="text-xl font-bold mb-6 text-center text-gray-900">管理者ログイン</h1>
 
           {loginError && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -264,7 +264,7 @@ export default function ModerationPage() {
                 </svg>
               </button>
             )}
-            <h1 className="text-2xl font-bold">
+            <h1 className="text-2xl font-bold text-gray-900">
               {viewMode === 'list' ? 'モデレーション' : selectedDiscussion?.title}
             </h1>
           </div>
@@ -287,7 +287,7 @@ export default function ModerationPage() {
         {viewMode === 'list' ? (
           // Discussion list
           <div className="bg-white rounded-lg shadow p-4 md:p-6">
-            <h2 className="text-lg font-bold mb-4">議論一覧 ({discussions.length}件)</h2>
+            <h2 className="text-lg font-bold mb-4 text-gray-900">議論一覧 ({discussions.length}件)</h2>
 
             {loading ? (
               <p className="text-gray-500">読み込み中...</p>
@@ -336,7 +336,7 @@ export default function ModerationPage() {
           // Discussion detail with posts
           <div className="bg-white rounded-lg shadow p-4 md:p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold">投稿一覧 ({selectedDiscussion?.posts.length || 0}件)</h2>
+              <h2 className="text-lg font-bold text-gray-900">投稿一覧 ({selectedDiscussion?.posts.length || 0}件)</h2>
               <button
                 onClick={() => handleDeleteDiscussion(selectedDiscussion!.discussion_key)}
                 className="px-4 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
@@ -348,7 +348,7 @@ export default function ModerationPage() {
             {selectedDiscussion?.source_url && (
               <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium">ソース:</span>{' '}
+                  <span className="font-medium text-gray-700">ソース:</span>{' '}
                   <a
                     href={selectedDiscussion.source_url}
                     target="_blank"

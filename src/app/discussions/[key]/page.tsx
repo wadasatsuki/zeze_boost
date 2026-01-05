@@ -237,7 +237,7 @@ export default function DiscussionDetailPage({ params }: Props) {
             <h3 className="text-lg font-bold mb-2 text-gray-900">{discussion.title}</h3>
             {discussion.source_url && (
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-medium">関連URL:</span>{' '}
+                <span className="font-medium text-gray-700">関連URL:</span>{' '}
                 <a
                   href={discussion.source_url}
                   target="_blank"

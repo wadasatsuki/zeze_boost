@@ -106,7 +106,7 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="font-bold text-base flex-1 text-center truncate px-2">{discussion.title}</h2>
+          <h2 className="font-bold text-base flex-1 text-center truncate px-2 text-gray-900">{discussion.title}</h2>
           <button
             onClick={handleShareOnX}
             className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
@@ -153,7 +153,7 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
           </div>
         ) : (
           <div className="p-4">
-            <h3 className="text-lg font-bold mb-2">{discussion.title}</h3>
+            <h3 className="text-lg font-bold mb-2 text-gray-900">{discussion.title}</h3>
             <p className="text-sm text-gray-600">
               作成日: {new Date(discussion.created_at).toLocaleDateString('ja-JP')}
             </p>
@@ -205,7 +205,7 @@ function PostCard({ post }: { post: Post }) {
         )}
         <span>{formattedDate}</span>
       </div>
-      <div className="whitespace-pre-wrap text-xs md:text-sm break-words">{post.content}</div>
+      <div className="whitespace-pre-wrap text-xs md:text-sm break-words text-gray-900">{post.content}</div>
     </div>
   );
 }

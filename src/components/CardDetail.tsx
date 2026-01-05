@@ -9,7 +9,7 @@ interface Props {
 export default function CardDetail({ card }: Props) {
   return (
     <div className="p-3 md:p-4 bg-white border rounded-lg">
-      <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2">{card.title}</h2>
+      <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2 text-gray-900">{card.title}</h2>
       <div className="space-y-1.5 md:space-y-2">
         <p className="text-2xl md:text-3xl font-bold text-blue-600">
           {card.value} <span className="text-sm md:text-lg text-gray-500">{card.unit}</span>

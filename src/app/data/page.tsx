@@ -255,7 +255,7 @@ function DataPageContent() {
           </div>
           <div className="px-3 md:px-4 pb-3 md:pb-4">
             <div className="p-3 md:p-4 bg-white border rounded-lg">
-              <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2">
+              <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2 text-gray-900">
                 {areaName || formatCoordinates(selectedAreaBounds)}
               </h2>
               <input

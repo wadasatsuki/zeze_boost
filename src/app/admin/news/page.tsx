@@ -209,7 +209,7 @@ export default function AdminNewsPage() {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm">
-          <h1 className="text-xl font-bold mb-6 text-center">管理者ログイン</h1>
+          <h1 className="text-xl font-bold mb-6 text-center text-gray-900">管理者ログイン</h1>
 
           {loginError && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -263,7 +263,7 @@ export default function AdminNewsPage() {
     <div className="min-h-screen bg-gray-100 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">ニュース管理</h1>
+          <h1 className="text-2xl font-bold text-gray-900">ニュース管理</h1>
           <div className="flex items-center gap-2">
             <a
               href="/admin/moderation"
@@ -283,7 +283,7 @@ export default function AdminNewsPage() {
         {/* Create/Edit form */}
         <div className="bg-white rounded-lg shadow p-4 md:p-6 mb-6">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold">
+            <h2 className="text-lg font-bold text-gray-900">
               {editingId ? 'ニュースを編集' : 'ニュースを追加'}
             </h2>
             {editingId && (
@@ -380,7 +380,7 @@ export default function AdminNewsPage() {
 
         {/* News list */}
         <div className="bg-white rounded-lg shadow p-4 md:p-6">
-          <h2 className="text-lg font-bold mb-4">ニュース一覧 ({news.length}件)</h2>
+          <h2 className="text-lg font-bold mb-4 text-gray-900">ニュース一覧 ({news.length}件)</h2>
 
           {loading ? (
             <p className="text-gray-500">読み込み中...</p>
