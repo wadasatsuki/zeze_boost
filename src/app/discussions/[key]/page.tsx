@@ -371,7 +371,7 @@ function PostCard({ post }: { post: Post }) {
         )}
         <span>{formattedDate}</span>
       </div>
-      <div className="whitespace-pre-wrap text-xs md:text-sm break-words">
+      <div className="whitespace-pre-wrap text-xs md:text-sm break-words text-gray-900">
         {renderContentWithLinks(post.content)}
       </div>
       {post.image_url && (
