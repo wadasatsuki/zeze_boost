@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 export function loadDataCards(): DataCard[] {
-  const csvPath = path.join(process.cwd(), 'public', 'zeze_dummy_data.csv');
+  const csvPath = path.join(process.cwd(), 'public', 'zeze_data_202601.csv');
   const csvContent = fs.readFileSync(csvPath, 'utf-8');
 
   const lines = csvContent.trim().split('\n');
@@ -12,7 +12,10 @@ export function loadDataCards(): DataCard[] {
   const cards: DataCard[] = [];
 
   for (let i = 1; i < lines.length; i++) {
-    const values = lines[i].split(',');
+    const line = lines[i].trim();
+    if (!line) continue; // Skip empty lines
+
+    const values = line.split(',');
     const card: DataCard = {
       id: values[0],
       title: values[1],

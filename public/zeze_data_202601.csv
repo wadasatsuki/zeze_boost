@@ -1,0 +1,13 @@
+id,title,theme,area,value,unit,as_of,description,source_url,discussion_key
+pop_total,人口総数,population,zeze,15437,人,2023-03-31,膳所学区の総人口,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,pop_total_zeze
+pop_male,男性人口,population,zeze,7350,人,2023-03-31,膳所学区の男性人口,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,pop_male_zeze
+pop_female,女性人口,population,zeze,8087,人,2023-03-31,膳所学区の女性人口,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,pop_female_zeze
+households_total,世帯数,population,zeze,7420,世帯,2023-03-31,膳所学区の総世帯数,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,households_total_zeze
+households_elderly,高齢者世帯数,population,zeze,不明,世帯,2023-03-31,高齢者のみ世帯を含む,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,households_elderly_zeze
+households_single,単身世帯数,population,zeze,不明,世帯,2023-03-31,単身世帯の増加傾向,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,households_single_zeze
+population_pyramid,人口ピラミッド,population,zeze,図表参照,–,2023-03-31,年齢構成の偏りが確認できる,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,pop_pyramid_zeze
+自治会加入世帯推移,自治会加入世帯の推移,community,zeze,減少傾向,傾向,2023-03-31,地域コミュニティ参加率の低下,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,community_membership_zeze
+traffic_accidents,交通事故件数の推移,safety,zeze,減少傾向,傾向,2023-03-31,交通事故件数の年次推移,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,traffic_accidents_zeze
+tourism_trend,観光客数の推移,economy,zeze,増減あり,傾向,2023-03-31,観光客数の長期推移,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,tourism_trend_zeze
+business_count,事業所数の推移,economy,zeze,減少傾向,傾向,2023-03-31,地域内事業所数の推移,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,business_count_zeze
+crime_cases,犯罪件数,safety,zeze,不明,件,2023-03-31,刑法犯等の発生状況,http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf,crime_cases_zeze

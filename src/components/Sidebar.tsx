@@ -45,7 +45,7 @@ export default function Sidebar() {
         {/* Logo */}
         <div className="mb-6">
           <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-            <span className="text-white text-lg font-bold">膳</span>
+            <span className="text-white text-sm font-bold">ZB</span>
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Discussion, Post } from '@/lib/types';
 
 interface Props {
@@ -9,10 +10,16 @@ interface Props {
 }
 
 export default function DiscussionPane({ discussionKey, onClose }: Props) {
+  const router = useRouter();
   const [discussion, setDiscussion] = useState<Discussion | null>(null);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'comments' | 'info'>('comments');
+
+  function handleBack() {
+    router.push('/discussions');
+  }
 
   useEffect(() => {
     loadOrCreateDiscussion();
@@ -66,9 +73,18 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
     setSubmitting(false);
   }
 
+  function handleShareOnX() {
+    const title = discussion?.title || '';
+    const text = `${title}\n\nZEZE BOOSTで議論に参加しよう！`;
+    const hashtags = 'zeze_boost';
+    const shareUrl = `${window.location.origin}/data?discussion=${discussionKey}`;
+    const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=${hashtags}`;
+    window.open(intentUrl, '_blank', 'noopener,noreferrer');
+  }
+
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-white">
         <p className="text-gray-500">読み込み中...</p>
       </div>
     );
@@ -76,47 +92,103 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
 
   if (!discussion) {
     return (
-      <div className="h-full flex items-center justify-center">
+      <div className="h-full flex items-center justify-center bg-white">
         <p className="text-red-500">エラーが発生しました</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="p-3 md:p-4 border-b flex items-center justify-between gap-2">
-        <h2 className="font-bold text-sm md:text-base truncate flex-1">{discussion.title}</h2>
-        <button
-          onClick={onClose}
-          className="text-gray-500 hover:text-gray-700 active:text-gray-900 text-xl p-1 -mr-1 flex-shrink-0"
-          aria-label="閉じる"
-        >
-          ×
-        </button>
+    <div className="h-full flex flex-col bg-white">
+      {/* Header */}
+      <div className="border-b">
+        <div className="px-4 py-3 flex items-center justify-between gap-3">
+          <button
+            onClick={handleBack}
+            className="text-gray-600 hover:text-gray-900 p-1 -ml-1"
+            aria-label="戻る"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h2 className="font-bold text-base flex-1 text-center truncate px-2">{discussion.title}</h2>
+          <button
+            onClick={handleShareOnX}
+            className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+            aria-label="Xでシェア"
+          >
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex px-4">
+          <button
+            onClick={() => setActiveTab('comments')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'comments'
+                ? 'border-black text-black'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            コメント
+          </button>
+          <button
+            onClick={() => setActiveTab('info')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'info'
+                ? 'border-black text-black'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            詳細
+          </button>
+        </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
-        {discussion.posts.map((post) => (
-          <PostCard key={post.id} post={post} />
-        ))}
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto">
+        {activeTab === 'comments' ? (
+          <div className="p-4 space-y-4">
+            {discussion.posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="p-4">
+            <h3 className="text-lg font-bold mb-2">{discussion.title}</h3>
+            <p className="text-sm text-gray-600">
+              作成日: {new Date(discussion.created_at).toLocaleDateString('ja-JP')}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              投稿数: {discussion.posts.length}件
+            </p>
+          </div>
+        )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-3 md:p-4 border-t bg-white">
-        <textarea
-          value={newPost}
-          onChange={(e) => setNewPost(e.target.value)}
-          placeholder="コメントを入力..."
-          className="w-full p-2 md:p-3 border rounded-lg resize-none text-sm md:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          rows={3}
-        />
-        <button
-          type="submit"
-          disabled={!newPost.trim() || submitting}
-          className="mt-2 w-full py-2.5 md:py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-400 text-sm md:text-base font-medium"
-        >
-          {submitting ? '送信中...' : '投稿する'}
-        </button>
-      </form>
+      {/* Bottom action bar */}
+      <div className="border-t bg-white">
+        <form onSubmit={handleSubmit} className="p-3 flex items-end gap-2">
+          <textarea
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+            placeholder="コメントを入力..."
+            className="flex-1 p-3 border rounded-xl resize-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+            rows={1}
+          />
+          <button
+            type="submit"
+            disabled={!newPost.trim() || submitting}
+            className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-300 text-sm font-medium flex-shrink-0"
+          >
+            {submitting ? '...' : '投稿'}
+          </button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -10,9 +10,10 @@ interface Props {
 
 export default function DataCardList({ cards, selectedCardId, onSelectCard }: Props) {
   return (
-    <div className="space-y-2">
+    <div>
       <h2 className="text-base md:text-lg font-bold mb-3 md:mb-4">膳所学区 人口データ</h2>
-      {cards.map((card) => (
+      <div className="grid grid-cols-2 gap-2">
+        {cards.map((card) => (
         <div
           key={card.id}
           onClick={() => onSelectCard(card)}
@@ -28,7 +29,8 @@ export default function DataCardList({ cards, selectedCardId, onSelectCard }: Pr
           </p>
           <p className="text-xs text-gray-400">{card.as_of}</p>
         </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

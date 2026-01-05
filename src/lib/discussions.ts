@@ -142,3 +142,29 @@ export function createAreaDiscussion(bounds: AreaBounds, name?: string): Discuss
 
   return discussion;
 }
+
+// Create free-form discussion with just a title
+export function createFreeDiscussion(title: string): Discussion {
+  const discussions = loadDiscussions();
+  const discussionKey = `free_${Date.now()}`;
+
+  const autoPost: Post = {
+    id: `post_${Date.now()}`,
+    discussion_key: discussionKey,
+    content: `💭 **${title}**\n\nこのテーマについて自由に議論しましょう！`,
+    created_at: new Date().toISOString(),
+    is_auto_generated: true,
+  };
+
+  const discussion: Discussion = {
+    discussion_key: discussionKey,
+    title,
+    posts: [autoPost],
+    created_at: new Date().toISOString(),
+  };
+
+  discussions[discussionKey] = discussion;
+  saveDiscussions(discussions);
+
+  return discussion;
+}

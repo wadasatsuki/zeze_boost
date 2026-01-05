@@ -1,13 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { DataCard, AreaBounds } from '@/lib/types';
 import DataCardList from '@/components/DataCardList';
 import CardDetail from '@/components/CardDetail';
 import DiscussionPane from '@/components/DiscussionPane';
 import AreaMap from '@/components/AreaMap';
+import NewDiscussionModal from '@/components/NewDiscussionModal';
 
-export default function DataPage() {
+function DataPageContent() {
+  const searchParams = useSearchParams();
   const [cards, setCards] = useState<DataCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<DataCard | null>(null);
   const [activeDiscussionKey, setActiveDiscussionKey] = useState<string | null>(null);
@@ -19,6 +22,9 @@ export default function DataPage() {
   const [areaName, setAreaName] = useState('');
   const [isAreaDiscussion, setIsAreaDiscussion] = useState(false);
 
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   useEffect(() => {
     async function loadCards() {
       const res = await fetch('/api/cards');
@@ -28,6 +34,15 @@ export default function DataPage() {
     }
     loadCards();
   }, []);
+
+  // Handle discussion query parameter
+  useEffect(() => {
+    const discussionKey = searchParams.get('discussion');
+    if (discussionKey) {
+      setActiveDiscussionKey(discussionKey);
+      setMobileView('discussion');
+    }
+  }, [searchParams]);
 
   function handleSelectCard(card: DataCard) {
     setSelectedCard(card);
@@ -89,6 +104,29 @@ export default function DataPage() {
     return `${centerLat}, ${centerLng}`;
   }
 
+  // Handle creating free-form discussion
+  async function handleCreateFreeDiscussion(title: string) {
+    try {
+      const res = await fetch('/api/free-discussions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      });
+      const data = await res.json();
+
+      if (data.discussion_key) {
+        setActiveDiscussionKey(data.discussion_key);
+        setIsAreaDiscussion(false);
+        setSelectedCard(null);
+        setSelectedAreaBounds(null);
+        setMobileView('discussion');
+        setIsModalOpen(false);
+      }
+    } catch (error) {
+      console.error('Error creating free discussion:', error);
+    }
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -105,37 +143,8 @@ export default function DataPage() {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       {/* Page header */}
       <header className="bg-white border-b p-3 md:p-4">
-        <h1 className="text-lg md:text-xl font-bold">データ閲覧</h1>
-        <p className="text-xs md:text-sm text-gray-500 hidden sm:block">
-          データカードを閲覧し、議論を始めることができます
-        </p>
+        <h1 className="text-lg md:text-xl font-bold">データやマップから議論を始めよう</h1>
       </header>
-
-      {/* Mobile tab navigation */}
-      {activeDiscussionKey && (
-        <div className="md:hidden flex border-b bg-white">
-          <button
-            onClick={() => setMobileView('list')}
-            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-              mobileView === 'list'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500'
-            }`}
-          >
-            データ一覧
-          </button>
-          <button
-            onClick={() => setMobileView('discussion')}
-            className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-              mobileView === 'discussion'
-                ? 'border-blue-600 text-blue-600'
-                : 'border-transparent text-gray-500'
-            }`}
-          >
-            議論
-          </button>
-        </div>
-      )}
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left column: Map + Card list */}
@@ -194,13 +203,13 @@ export default function DataPage() {
 
       {/* Fixed panel for card detail */}
       {showCardPanel && (
-        <div className={`fixed bottom-0 left-0 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
+        <div className={`fixed bottom-0 left-16 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
           activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
         }`}>
           <div className="p-3 md:p-4">
             <CardDetail card={selectedCard} />
           </div>
-          <div className="p-3 md:p-4 pt-0 pb-safe">
+          <div className="p-3 md:p-4 pt-0 pb-6">
             <button
               onClick={handleStartDiscussion}
               className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm md:text-base"
@@ -213,7 +222,7 @@ export default function DataPage() {
 
       {/* Fixed panel for area discussion */}
       {showAreaPanel && selectedAreaBounds && (
-        <div className={`fixed bottom-0 left-0 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
+        <div className={`fixed bottom-0 left-16 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
           activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
         }`}>
           <div className="p-3 md:p-4">
@@ -233,7 +242,7 @@ export default function DataPage() {
               </p>
             </div>
           </div>
-          <div className="p-3 md:p-4 pt-0 pb-safe">
+          <div className="p-3 md:p-4 pt-0 pb-6">
             <button
               onClick={handleStartAreaDiscussion}
               className="w-full py-3 px-4 bg-green-600 text-white rounded-lg hover:bg-green-700 active:bg-green-800 transition-colors font-medium text-sm md:text-base"
@@ -243,6 +252,38 @@ export default function DataPage() {
           </div>
         </div>
       )}
+
+      {/* Floating action button - hide when discussion is open */}
+      {!activeDiscussionKey && (
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center justify-center z-20"
+          aria-label="新しい議論を追加"
+        >
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+        </button>
+      )}
+
+      {/* New discussion modal */}
+      <NewDiscussionModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSubmit={handleCreateFreeDiscussion}
+      />
     </div>
+  );
+}
+
+export default function DataPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <p className="text-gray-500">読み込み中...</p>
+      </div>
+    }>
+      <DataPageContent />
+    </Suspense>
   );
 }
