@@ -1,11 +1,18 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { AreaBounds } from '@/lib/types';
 
-// Zeze area center coordinates (approximate)
-const ZEZE_CENTER = { lat: 35.0045, lng: 135.8680 };
-const ZEZE_ZOOM = 15;
+// Google My Maps embed URL
+const MY_MAPS_EMBED_URL = 'https://www.google.com/maps/d/embed?mid=1VzpZ0JMnBa8Zbk10jtrnLGZMR7CCZWM';
+
+// Approximate bounds for the Zeze area (for coordinate calculation)
+const MAP_BOUNDS = {
+  north: 35.0120,
+  south: 34.9970,
+  east: 135.8780,
+  west: 135.8580,
+};
 
 interface Props {
   onAreaSelected: (bounds: AreaBounds) => void;
@@ -14,201 +21,190 @@ interface Props {
 }
 
 export default function AreaMap({ onAreaSelected, selectedBounds, onClearSelection }: Props) {
-  const mapRef = useRef<HTMLDivElement>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [drawingManager, setDrawingManager] = useState<google.maps.drawing.DrawingManager | null>(null);
-  const [currentRectangle, setCurrentRectangle] = useState<google.maps.Rectangle | null>(null);
-  const [isDrawing, setIsDrawing] = useState(false);
-  const [mapError, setMapError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isSelecting, setIsSelecting] = useState(false);
+  const [selectionStart, setSelectionStart] = useState<{ x: number; y: number } | null>(null);
+  const [selectionEnd, setSelectionEnd] = useState<{ x: number; y: number } | null>(null);
+  const [showOverlay, setShowOverlay] = useState(false);
 
-  useEffect(() => {
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  // Convert pixel coordinates to approximate lat/lng
+  const pixelToLatLng = useCallback((x: number, y: number, width: number, height: number) => {
+    const lng = MAP_BOUNDS.west + (x / width) * (MAP_BOUNDS.east - MAP_BOUNDS.west);
+    const lat = MAP_BOUNDS.north - (y / height) * (MAP_BOUNDS.north - MAP_BOUNDS.south);
+    return { lat, lng };
+  }, []);
 
-    if (!apiKey) {
-      setMapError('Google Maps APIキーが設定されていません');
-      setIsLoading(false);
+  const handleStartSelection = () => {
+    setShowOverlay(true);
+    setIsSelecting(false);
+    setSelectionStart(null);
+    setSelectionEnd(null);
+    if (selectedBounds) {
+      onClearSelection();
+    }
+  };
+
+  const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!showOverlay || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    setIsSelecting(true);
+    setSelectionStart({ x, y });
+    setSelectionEnd({ x, y });
+  };
+
+  const handleMouseMove = (e: React.MouseEvent | React.TouchEvent) => {
+    if (!isSelecting || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
+    const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
+
+    const x = Math.max(0, Math.min(clientX - rect.left, rect.width));
+    const y = Math.max(0, Math.min(clientY - rect.top, rect.height));
+
+    setSelectionEnd({ x, y });
+  };
+
+  const handleMouseUp = () => {
+    if (!isSelecting || !selectionStart || !selectionEnd || !containerRef.current) {
+      setIsSelecting(false);
       return;
     }
 
-    // Load Google Maps via script tag
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=drawing&callback=initMap`;
-    script.async = true;
-    script.defer = true;
+    const rect = containerRef.current.getBoundingClientRect();
 
-    // Define callback
-    (window as any).initMap = () => {
-      if (!mapRef.current) return;
+    // Calculate bounds from selection
+    const minX = Math.min(selectionStart.x, selectionEnd.x);
+    const maxX = Math.max(selectionStart.x, selectionEnd.x);
+    const minY = Math.min(selectionStart.y, selectionEnd.y);
+    const maxY = Math.max(selectionStart.y, selectionEnd.y);
 
-      try {
-        const mapInstance = new google.maps.Map(mapRef.current, {
-          center: ZEZE_CENTER,
-          zoom: ZEZE_ZOOM,
-          mapTypeControl: false,
-          streetViewControl: false,
-          fullscreenControl: false,
-          zoomControl: true,
-          gestureHandling: 'greedy',
-        });
+    // Only accept selection if it's large enough
+    if (maxX - minX > 20 && maxY - minY > 20) {
+      const nw = pixelToLatLng(minX, minY, rect.width, rect.height);
+      const se = pixelToLatLng(maxX, maxY, rect.width, rect.height);
 
-        const drawingManagerInstance = new google.maps.drawing.DrawingManager({
-          drawingMode: null,
-          drawingControl: false,
-          rectangleOptions: {
-            fillColor: '#3B82F6',
-            fillOpacity: 0.3,
-            strokeColor: '#2563EB',
-            strokeWeight: 2,
-            editable: true,
-            draggable: true,
-          },
-        });
+      onAreaSelected({
+        north: nw.lat,
+        south: se.lat,
+        east: se.lng,
+        west: nw.lng,
+      });
 
-        drawingManagerInstance.setMap(mapInstance);
-
-        google.maps.event.addListener(
-          drawingManagerInstance,
-          'rectanglecomplete',
-          (rectangle: google.maps.Rectangle) => {
-            setCurrentRectangle((prev) => {
-              if (prev) prev.setMap(null);
-              return rectangle;
-            });
-            setIsDrawing(false);
-            drawingManagerInstance.setDrawingMode(null);
-
-            const bounds = rectangle.getBounds();
-            if (bounds) {
-              const ne = bounds.getNorthEast();
-              const sw = bounds.getSouthWest();
-              onAreaSelected({
-                north: ne.lat(),
-                south: sw.lat(),
-                east: ne.lng(),
-                west: sw.lng(),
-              });
-            }
-
-            // Listen for bounds changes when rectangle is edited
-            google.maps.event.addListener(rectangle, 'bounds_changed', () => {
-              const newBounds = rectangle.getBounds();
-              if (newBounds) {
-                const ne = newBounds.getNorthEast();
-                const sw = newBounds.getSouthWest();
-                onAreaSelected({
-                  north: ne.lat(),
-                  south: sw.lat(),
-                  east: ne.lng(),
-                  west: sw.lng(),
-                });
-              }
-            });
-          }
-        );
-
-        setMap(mapInstance);
-        setDrawingManager(drawingManagerInstance);
-        setIsLoading(false);
-      } catch (error) {
-        console.error('Error initializing map:', error);
-        setMapError('地図の初期化に失敗しました');
-        setIsLoading(false);
-      }
-    };
-
-    script.onerror = () => {
-      setMapError('地図の読み込みに失敗しました');
-      setIsLoading(false);
-    };
-
-    document.head.appendChild(script);
-
-    return () => {
-      // Cleanup
-      delete (window as any).initMap;
-      const existingScript = document.querySelector(`script[src*="maps.googleapis.com"]`);
-      if (existingScript) {
-        existingScript.remove();
-      }
-    };
-  }, [onAreaSelected]);
-
-  // Update rectangle when selectedBounds changes externally
-  useEffect(() => {
-    if (!map || !selectedBounds) return;
-
-    if (currentRectangle) {
-      const bounds = new google.maps.LatLngBounds(
-        { lat: selectedBounds.south, lng: selectedBounds.west },
-        { lat: selectedBounds.north, lng: selectedBounds.east }
-      );
-      currentRectangle.setBounds(bounds);
+      setShowOverlay(false);
     }
-  }, [selectedBounds, map, currentRectangle]);
 
-  const startDrawing = useCallback(() => {
-    if (drawingManager) {
-      // Clear existing rectangle
-      if (currentRectangle) {
-        currentRectangle.setMap(null);
-        setCurrentRectangle(null);
-        onClearSelection();
-      }
-      drawingManager.setDrawingMode(google.maps.drawing.OverlayType.RECTANGLE);
-      setIsDrawing(true);
-    }
-  }, [drawingManager, currentRectangle, onClearSelection]);
+    setIsSelecting(false);
+  };
 
-  const clearSelection = useCallback(() => {
-    if (currentRectangle) {
-      currentRectangle.setMap(null);
-      setCurrentRectangle(null);
-    }
-    if (drawingManager) {
-      drawingManager.setDrawingMode(null);
-    }
-    setIsDrawing(false);
+  const handleCancelSelection = () => {
+    setShowOverlay(false);
+    setIsSelecting(false);
+    setSelectionStart(null);
+    setSelectionEnd(null);
+  };
+
+  const clearSelection = () => {
+    setSelectionStart(null);
+    setSelectionEnd(null);
     onClearSelection();
-  }, [currentRectangle, drawingManager, onClearSelection]);
+  };
 
-  if (mapError) {
-    return (
-      <div className="w-full h-48 md:h-64 bg-gray-100 flex items-center justify-center rounded-lg border">
-        <div className="text-center text-gray-500 p-4">
-          <p className="text-sm">{mapError}</p>
-          <p className="text-xs mt-1">NEXT_PUBLIC_GOOGLE_MAPS_API_KEY を .env.local に設定してください</p>
-        </div>
-      </div>
-    );
-  }
+  // Calculate selection rectangle style
+  const getSelectionStyle = () => {
+    if (!selectionStart || !selectionEnd) return {};
+
+    const left = Math.min(selectionStart.x, selectionEnd.x);
+    const top = Math.min(selectionStart.y, selectionEnd.y);
+    const width = Math.abs(selectionEnd.x - selectionStart.x);
+    const height = Math.abs(selectionEnd.y - selectionStart.y);
+
+    return {
+      left: `${left}px`,
+      top: `${top}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+    };
+  };
 
   return (
     <div className="w-full">
-      <div className="relative">
-        <div
-          ref={mapRef}
-          className="w-full h-48 md:h-64 rounded-lg border overflow-hidden bg-gray-100"
+      <div
+        ref={containerRef}
+        className="relative w-full h-48 md:h-64 rounded-lg border overflow-hidden"
+      >
+        {/* Google My Maps iframe */}
+        <iframe
+          src={MY_MAPS_EMBED_URL}
+          className="w-full h-full border-0"
+          allowFullScreen
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
         />
-        {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
-            <p className="text-gray-500 text-sm">地図を読み込み中...</p>
+
+        {/* Selection overlay */}
+        {showOverlay && (
+          <div
+            className="absolute inset-0 bg-black/20 cursor-crosshair z-10"
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            onTouchStart={handleMouseDown}
+            onTouchMove={handleMouseMove}
+            onTouchEnd={handleMouseUp}
+          >
+            {/* Selection rectangle */}
+            {selectionStart && selectionEnd && (
+              <div
+                className="absolute border-2 border-blue-500 bg-blue-500/30 pointer-events-none"
+                style={getSelectionStyle()}
+              />
+            )}
+
+            {/* Instructions */}
+            <div className="absolute top-2 left-2 right-2 bg-white/90 rounded px-2 py-1 text-xs text-center">
+              ドラッグしてエリアを選択してください
+            </div>
+
+            {/* Cancel button */}
+            <button
+              onClick={handleCancelSelection}
+              className="absolute bottom-2 right-2 bg-white rounded px-2 py-1 text-xs text-gray-600 shadow"
+            >
+              キャンセル
+            </button>
+          </div>
+        )}
+
+        {/* Selected area indicator */}
+        {selectedBounds && !showOverlay && (
+          <div className="absolute top-2 left-2 bg-green-500 text-white rounded px-2 py-1 text-xs">
+            エリア選択済み
           </div>
         )}
       </div>
+
       <div className="mt-2 flex flex-wrap gap-2">
         <button
-          onClick={startDrawing}
-          disabled={isDrawing || isLoading}
+          onClick={handleStartSelection}
+          disabled={showOverlay}
           className={`flex-1 md:flex-none px-3 py-2 text-xs md:text-sm rounded-lg transition-colors ${
-            isDrawing
+            showOverlay
               ? 'bg-blue-100 text-blue-600 border border-blue-300'
-              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 disabled:bg-gray-400'
+              : 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800'
           }`}
         >
-          {isDrawing ? 'エリアを描画中...' : 'エリアを選択'}
+          {showOverlay ? 'エリアを選択中...' : 'エリアを選択'}
         </button>
-        {(selectedBounds || currentRectangle) && (
+        {selectedBounds && (
           <button
             onClick={clearSelection}
             className="flex-1 md:flex-none px-3 py-2 text-xs md:text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
@@ -218,7 +214,7 @@ export default function AreaMap({ onAreaSelected, selectedBounds, onClearSelecti
         )}
       </div>
       <p className="mt-1 text-xs text-gray-400">
-        「エリアを選択」をタップして、地図上で四角形を描いてください
+        「エリアを選択」をタップして、地図上でドラッグしてエリアを選んでください
       </p>
     </div>
   );
