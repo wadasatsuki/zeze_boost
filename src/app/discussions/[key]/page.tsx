@@ -155,10 +155,10 @@ export default function DiscussionDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="h-screen w-screen overflow-hidden bg-white flex flex-col">
       {/* Header */}
       <div className="border-b flex-shrink-0">
-        <div className="px-4 py-3 flex items-center gap-3">
+        <div className="px-4 py-3 flex items-center gap-3 min-w-0">
           <button
             onClick={handleBack}
             className="text-gray-600 hover:text-gray-900 p-1 -ml-1 flex-shrink-0"
@@ -207,8 +207,8 @@ export default function DiscussionDetailPage({ params }: Props) {
 
       {/* Source URL banner */}
       {discussion.source_url && (
-        <div className="px-4 py-2 bg-blue-50 border-b flex-shrink-0">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="px-4 py-2 bg-blue-50 border-b flex-shrink-0 overflow-hidden">
+          <div className="flex items-center gap-2 text-sm min-w-0">
             <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
@@ -225,7 +225,7 @@ export default function DiscussionDetailPage({ params }: Props) {
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-32">
         {activeTab === 'comments' ? (
           <div className="p-4 space-y-4">
             {discussion.posts.map((post) => (

@@ -107,19 +107,19 @@ export default function DiscussionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col">
-      <header className="bg-white border-b p-3 md:p-4">
+    <div className="h-screen w-screen overflow-hidden bg-gray-100 flex flex-col">
+      <header className="bg-white border-b p-3 md:p-4 flex-shrink-0">
         <h1 className="text-lg md:text-xl font-bold">進行中の議論一覧</h1>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Left column: Discussion list */}
         <div
-          className={`w-full md:w-1/2 flex flex-col md:border-r bg-white ${
+          className={`w-full md:w-1/2 flex flex-col md:border-r bg-white overflow-hidden ${
             mobileView === 'detail' ? 'hidden md:flex' : 'flex'
           }`}
         >
-          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto overflow-x-hidden">
             {discussions.length === 0 ? (
               <div className="text-center py-12">
                 <p className="text-4xl mb-4">💬</p>
@@ -134,10 +134,10 @@ export default function DiscussionsPage() {
             ) : (
               <div className="space-y-3">
                 {discussions.map((discussion) => (
-                  <button
+                  <div
                     key={discussion.discussion_key}
                     onClick={() => handleSelectDiscussion(discussion.discussion_key)}
-                    className={`block w-full text-left bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow ${
+                    className={`bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow cursor-pointer ${
                       selectedDiscussionKey === discussion.discussion_key ? 'ring-2 ring-blue-500' : ''
                     }`}
                   >
@@ -145,7 +145,7 @@ export default function DiscussionsPage() {
                       <span className="text-lg flex-shrink-0">
                         {discussion.area_bounds ? '📍' : '📊'}
                       </span>
-                      <h2 className="font-medium text-gray-900 truncate flex-1">
+                      <h2 className="font-medium text-gray-900 truncate">
                         {discussion.title}
                       </h2>
                     </div>
@@ -157,7 +157,7 @@ export default function DiscussionsPage() {
                         {formatDate(discussion.created_at)}
                       </span>
                     </div>
-                  </button>
+                  </div>
                 ))}
               </div>
             )}
@@ -166,7 +166,7 @@ export default function DiscussionsPage() {
 
         {/* Right column: Discussion detail */}
         <div
-          className={`w-full md:w-1/2 bg-white ${
+          className={`w-full md:w-1/2 bg-white overflow-hidden ${
             mobileView === 'detail' ? 'flex' : 'hidden md:flex'
           } flex-col`}
         >
@@ -317,10 +317,10 @@ function DiscussionDetail({
   }
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col overflow-hidden">
       {/* Header */}
       <div className="border-b flex-shrink-0">
-        <div className="px-4 py-3 flex items-center gap-3">
+        <div className="px-4 py-3 flex items-center gap-3 min-w-0">
           <button
             onClick={onClose}
             className="md:hidden text-gray-600 hover:text-gray-900 p-1 -ml-1 flex-shrink-0"
@@ -369,8 +369,8 @@ function DiscussionDetail({
 
       {/* Source URL banner */}
       {discussion.source_url && (
-        <div className="px-4 py-2 bg-blue-50 border-b flex-shrink-0">
-          <div className="flex items-center gap-2 text-sm">
+        <div className="px-4 py-2 bg-blue-50 border-b flex-shrink-0 overflow-hidden">
+          <div className="flex items-center gap-2 text-sm min-w-0">
             <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
@@ -387,7 +387,7 @@ function DiscussionDetail({
       )}
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto pb-32">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden pb-32">
         {activeTab === 'comments' ? (
           <div className="p-4 space-y-4">
             {discussion.posts.map((post) => (
