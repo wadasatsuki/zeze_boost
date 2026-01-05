@@ -40,8 +40,8 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Sidebar - icon only, Pinterest style */}
-      <aside className="fixed top-0 left-0 h-full bg-white border-r z-40 w-16 flex flex-col items-center py-4">
+      {/* Desktop: Left sidebar */}
+      <aside className="hidden md:flex fixed top-0 left-0 h-full bg-white border-r z-40 w-16 flex-col items-center py-4">
         {/* Logo */}
         <div className="mb-6">
           <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
@@ -83,8 +83,30 @@ export default function Sidebar() {
         </nav>
       </aside>
 
-      {/* Spacer for main content */}
-      <div className="w-16 flex-shrink-0 hidden md:block" />
+      {/* Mobile: Bottom navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t z-40 pb-safe">
+        <div className="flex justify-around items-center h-16">
+          {navItems.map((item) => {
+            const isActive = pathname === item.href ||
+              (item.href !== '/' && pathname.startsWith(item.href));
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex flex-col items-center justify-center flex-1 h-full transition-colors ${
+                  isActive
+                    ? 'text-blue-600'
+                    : 'text-gray-500'
+                }`}
+              >
+                {item.icon}
+                <span className="text-xs mt-1">{item.label}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </>
   );
 }

@@ -1,14 +1,16 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Discussion, Post } from '@/lib/types';
 
 interface Props {
-  discussionKey: string;
-  onClose: () => void;
+  params: Promise<{ key: string }>;
 }
 
-export default function DiscussionPane({ discussionKey, onClose }: Props) {
+export default function DiscussionDetailPage({ params }: Props) {
+  const router = useRouter();
+  const [discussionKey, setDiscussionKey] = useState<string | null>(null);
   const [discussion, setDiscussion] = useState<Discussion | null>(null);
   const [loading, setLoading] = useState(true);
   const [newPost, setNewPost] = useState('');
@@ -16,35 +18,36 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
   const [activeTab, setActiveTab] = useState<'comments' | 'info'>('comments');
 
   useEffect(() => {
-    loadOrCreateDiscussion();
+    params.then((p) => setDiscussionKey(p.key));
+  }, [params]);
+
+  useEffect(() => {
+    if (discussionKey) {
+      loadDiscussion();
+    }
   }, [discussionKey]);
 
-  async function loadOrCreateDiscussion() {
+  async function loadDiscussion() {
+    if (!discussionKey) return;
     setLoading(true);
 
-    // Try to get existing discussion
     const res = await fetch(`/api/discussions/${discussionKey}`);
     const data = await res.json();
 
     if (data.discussion) {
       setDiscussion(data.discussion);
-    } else {
-      // Create new discussion
-      const createRes = await fetch(`/api/discussions/${discussionKey}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'create' }),
-      });
-      const createData = await createRes.json();
-      setDiscussion(createData.discussion);
     }
 
     setLoading(false);
   }
 
+  function handleBack() {
+    router.push('/discussions');
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!newPost.trim() || submitting) return;
+    if (!newPost.trim() || submitting || !discussionKey) return;
 
     setSubmitting(true);
 
@@ -71,14 +74,14 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
     const title = discussion?.title || '';
     const text = `${title}\n\nZEZE BOOSTで議論に参加しよう！`;
     const hashtags = 'zeze_boost';
-    const shareUrl = `${window.location.origin}/data?discussion=${discussionKey}`;
+    const shareUrl = `${window.location.origin}/discussions/${discussionKey}`;
     const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=${hashtags}`;
     window.open(intentUrl, '_blank', 'noopener,noreferrer');
   }
 
   if (loading) {
     return (
-      <div className="h-full flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-white">
         <p className="text-gray-500">読み込み中...</p>
       </div>
     );
@@ -86,30 +89,30 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
 
   if (!discussion) {
     return (
-      <div className="h-full flex items-center justify-center bg-white">
-        <p className="text-red-500">エラーが発生しました</p>
+      <div className="min-h-screen flex items-center justify-center bg-white">
+        <p className="text-red-500">議論が見つかりませんでした</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full flex flex-col bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       {/* Header */}
-      <div className="border-b">
-        <div className="px-4 py-3 flex items-center justify-between gap-3">
+      <div className="border-b flex-shrink-0">
+        <div className="px-4 py-3 flex items-center gap-3">
           <button
-            onClick={onClose}
-            className="text-gray-600 hover:text-gray-900 p-1 -ml-1"
+            onClick={handleBack}
+            className="text-gray-600 hover:text-gray-900 p-1 -ml-1 flex-shrink-0"
             aria-label="戻る"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="font-bold text-base flex-1 text-center truncate px-2">{discussion.title}</h2>
+          <h2 className="font-bold text-base flex-1 truncate">{discussion.title}</h2>
           <button
             onClick={handleShareOnX}
-            className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors"
+            className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
             aria-label="Xでシェア"
           >
             <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
@@ -144,7 +147,7 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto pb-20">
         {activeTab === 'comments' ? (
           <div className="p-4 space-y-4">
             {discussion.posts.map((post) => (
@@ -164,8 +167,8 @@ export default function DiscussionPane({ discussionKey, onClose }: Props) {
         )}
       </div>
 
-      {/* Bottom action bar */}
-      <div className="border-t bg-white">
+      {/* Bottom action bar - fixed above mobile nav */}
+      <div className="fixed bottom-16 md:bottom-0 left-0 md:left-16 right-0 border-t bg-white z-10">
         <form onSubmit={handleSubmit} className="p-3 flex items-end gap-2">
           <textarea
             value={newPost}

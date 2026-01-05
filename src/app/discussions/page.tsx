@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Discussion } from '@/lib/types';
+import { Discussion, Post } from '@/lib/types';
 import NewDiscussionModal from '@/components/NewDiscussionModal';
 
 export default function DiscussionsPage() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDiscussionKey, setSelectedDiscussionKey] = useState<string | null>(null);
+  const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
+  const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
   const router = useRouter();
 
   async function handleCreateFreeDiscussion(title: string) {
@@ -23,27 +26,63 @@ export default function DiscussionsPage() {
 
       if (data.discussion_key) {
         setIsModalOpen(false);
-        router.push(`/data?discussion=${data.discussion_key}`);
+        // Reload discussions and select the new one
+        await loadDiscussions();
+        setSelectedDiscussionKey(data.discussion_key);
+        setMobileView('detail');
       }
     } catch (error) {
       console.error('Error creating free discussion:', error);
     }
   }
 
-  useEffect(() => {
-    async function loadDiscussions() {
-      try {
-        const res = await fetch('/api/discussions');
-        const data = await res.json();
-        setDiscussions(data.discussions);
-      } catch (error) {
-        console.error('Error loading discussions:', error);
-      } finally {
-        setLoading(false);
-      }
+  async function loadDiscussions() {
+    try {
+      const res = await fetch('/api/discussions');
+      const data = await res.json();
+      setDiscussions(data.discussions);
+      return data.discussions;
+    } catch (error) {
+      console.error('Error loading discussions:', error);
+      return [];
     }
-    loadDiscussions();
+  }
+
+  useEffect(() => {
+    loadDiscussions().then(() => setLoading(false));
   }, []);
+
+  // Load selected discussion details
+  useEffect(() => {
+    if (selectedDiscussionKey) {
+      loadDiscussionDetail(selectedDiscussionKey);
+    } else {
+      setSelectedDiscussion(null);
+    }
+  }, [selectedDiscussionKey]);
+
+  async function loadDiscussionDetail(key: string) {
+    try {
+      const res = await fetch(`/api/discussions/${key}`);
+      const data = await res.json();
+      if (data.discussion) {
+        setSelectedDiscussion(data.discussion);
+      }
+    } catch (error) {
+      console.error('Error loading discussion:', error);
+    }
+  }
+
+  function handleSelectDiscussion(key: string) {
+    setSelectedDiscussionKey(key);
+    setMobileView('detail');
+  }
+
+  function handleCloseDetail() {
+    setSelectedDiscussionKey(null);
+    setSelectedDiscussion(null);
+    setMobileView('list');
+  }
 
   function formatDate(dateString: string): string {
     const date = new Date(dateString);
@@ -73,54 +112,85 @@ export default function DiscussionsPage() {
         <h1 className="text-lg md:text-xl font-bold">進行中の議論一覧</h1>
       </header>
 
-      <div className="flex-1 p-4 md:p-6 overflow-y-auto">
-        {discussions.length === 0 ? (
-          <div className="text-center py-12">
-            <p className="text-4xl mb-4">💬</p>
-            <p className="text-gray-500 mb-4">まだ議論がありません</p>
-            <Link
-              href="/data"
-              className="inline-block py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              データから議論を始める
-            </Link>
-          </div>
-        ) : (
-          <div className="max-w-2xl mx-auto space-y-3">
-            {discussions.map((discussion) => (
-              <Link
-                key={discussion.discussion_key}
-                href={`/data?discussion=${discussion.discussion_key}`}
-                className="block bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="flex-1 min-w-0">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Left column: Discussion list */}
+        <div
+          className={`w-full md:w-1/2 flex flex-col md:border-r bg-white ${
+            mobileView === 'detail' ? 'hidden md:flex' : 'flex'
+          }`}
+        >
+          <div className="flex-1 p-4 md:p-6 overflow-y-auto">
+            {discussions.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-4xl mb-4">💬</p>
+                <p className="text-gray-500 mb-4">まだ議論がありません</p>
+                <Link
+                  href="/data"
+                  className="inline-block py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  データから議論を始める
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {discussions.map((discussion) => (
+                  <button
+                    key={discussion.discussion_key}
+                    onClick={() => handleSelectDiscussion(discussion.discussion_key)}
+                    className={`block w-full text-left bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow ${
+                      selectedDiscussionKey === discussion.discussion_key ? 'ring-2 ring-blue-500' : ''
+                    }`}
+                  >
                     <div className="flex items-center gap-2 mb-1">
-                      <span className="text-lg">
+                      <span className="text-lg flex-shrink-0">
                         {discussion.area_bounds ? '📍' : '📊'}
                       </span>
-                      <h2 className="font-medium text-gray-900 truncate">
+                      <h2 className="font-medium text-gray-900 truncate flex-1">
                         {discussion.title}
                       </h2>
                     </div>
-                    <p className="text-sm text-gray-500">
-                      {discussion.posts.length} 件の投稿
-                    </p>
-                  </div>
-                  <span className="text-xs text-gray-400 whitespace-nowrap">
-                    {formatDate(discussion.created_at)}
-                  </span>
-                </div>
-              </Link>
-            ))}
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-gray-500">
+                        {discussion.posts.length} 件の投稿
+                      </p>
+                      <span className="text-xs text-gray-400">
+                        {formatDate(discussion.created_at)}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        {/* Right column: Discussion detail */}
+        <div
+          className={`w-full md:w-1/2 bg-white ${
+            mobileView === 'detail' ? 'flex' : 'hidden md:flex'
+          } flex-col`}
+        >
+          {selectedDiscussion ? (
+            <DiscussionDetail
+              discussion={selectedDiscussion}
+              onClose={handleCloseDetail}
+              onPostAdded={() => loadDiscussionDetail(selectedDiscussion.discussion_key)}
+            />
+          ) : (
+            <div className="h-full flex items-center justify-center text-gray-400">
+              <div className="text-center px-4">
+                <p className="text-4xl mb-2">💬</p>
+                <p className="text-sm md:text-base">議論を選択してください</p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Floating action button */}
       <button
         onClick={() => setIsModalOpen(true)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center justify-center z-20"
+        className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center justify-center z-20"
         aria-label="新しい議論を追加"
       >
         <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,6 +204,172 @@ export default function DiscussionsPage() {
         onClose={() => setIsModalOpen(false)}
         onSubmit={handleCreateFreeDiscussion}
       />
+    </div>
+  );
+}
+
+// Inline Discussion Detail Component
+function DiscussionDetail({
+  discussion,
+  onClose,
+  onPostAdded,
+}: {
+  discussion: Discussion;
+  onClose: () => void;
+  onPostAdded: () => void;
+}) {
+  const [newPost, setNewPost] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [activeTab, setActiveTab] = useState<'comments' | 'info'>('comments');
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!newPost.trim() || submitting) return;
+
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/discussions/${discussion.discussion_key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'post', content: newPost }),
+      });
+
+      const data = await res.json();
+
+      if (data.post) {
+        setNewPost('');
+        onPostAdded();
+      }
+    } catch (error) {
+      console.error('Error posting:', error);
+    }
+
+    setSubmitting(false);
+  }
+
+  function handleShareOnX() {
+    const text = `${discussion.title}\n\nZEZE BOOSTで議論に参加しよう！`;
+    const hashtags = 'zeze_boost';
+    const shareUrl = `${window.location.origin}/discussions/${discussion.discussion_key}`;
+    const intentUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}&hashtags=${hashtags}`;
+    window.open(intentUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  return (
+    <div className="h-full flex flex-col">
+      {/* Header */}
+      <div className="border-b flex-shrink-0">
+        <div className="px-4 py-3 flex items-center gap-3">
+          <button
+            onClick={onClose}
+            className="md:hidden text-gray-600 hover:text-gray-900 p-1 -ml-1 flex-shrink-0"
+            aria-label="戻る"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <h2 className="font-bold text-base flex-1 truncate">{discussion.title}</h2>
+          <button
+            onClick={handleShareOnX}
+            className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
+            aria-label="Xでシェア"
+          >
+            <svg className="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex px-4">
+          <button
+            onClick={() => setActiveTab('comments')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'comments'
+                ? 'border-black text-black'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            コメント
+          </button>
+          <button
+            onClick={() => setActiveTab('info')}
+            className={`px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              activeTab === 'info'
+                ? 'border-black text-black'
+                : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            詳細
+          </button>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 overflow-y-auto">
+        {activeTab === 'comments' ? (
+          <div className="p-4 space-y-4">
+            {discussion.posts.map((post) => (
+              <PostCard key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <div className="p-4">
+            <h3 className="text-lg font-bold mb-2">{discussion.title}</h3>
+            <p className="text-sm text-gray-600">
+              作成日: {new Date(discussion.created_at).toLocaleDateString('ja-JP')}
+            </p>
+            <p className="text-sm text-gray-600 mt-1">
+              投稿数: {discussion.posts.length}件
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Bottom action bar */}
+      <div className="border-t bg-white flex-shrink-0">
+        <form onSubmit={handleSubmit} className="p-3 flex items-end gap-2">
+          <textarea
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+            placeholder="コメントを入力..."
+            className="flex-1 p-3 border rounded-xl resize-none text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-gray-50"
+            rows={1}
+          />
+          <button
+            type="submit"
+            disabled={!newPost.trim() || submitting}
+            className="px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 active:bg-blue-800 transition-colors disabled:bg-gray-300 text-sm font-medium flex-shrink-0"
+          >
+            {submitting ? '...' : '投稿'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+function PostCard({ post }: { post: Post }) {
+  const date = new Date(post.created_at);
+  const formattedDate = date.toLocaleString('ja-JP');
+
+  return (
+    <div
+      className={`p-2.5 md:p-3 rounded-lg ${
+        post.is_auto_generated ? 'bg-blue-50 border border-blue-200' : 'bg-gray-50'
+      }`}
+    >
+      <div className="text-xs text-gray-400 mb-1.5 md:mb-2 flex flex-wrap items-center gap-1">
+        {post.is_auto_generated && (
+          <span className="bg-blue-100 text-blue-600 px-1.5 md:px-2 py-0.5 rounded text-xs">
+            自動生成
+          </span>
+        )}
+        <span>{formattedDate}</span>
+      </div>
+      <div className="whitespace-pre-wrap text-xs md:text-sm break-words">{post.content}</div>
     </div>
   );
 }

@@ -194,7 +194,13 @@ function DataPageContent() {
                 <p className="text-4xl mb-2">💬</p>
                 <p className="text-sm md:text-base">地図でエリアを選択するか、</p>
                 <p className="text-sm md:text-base">データカードを選んで</p>
-                <p className="text-sm md:text-base">議論を始めましょう</p>
+                <p className="text-sm md:text-base mb-4">議論を始めましょう</p>
+                <a
+                  href="/discussions"
+                  className="inline-block py-2 px-4 bg-gray-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors text-sm"
+                >
+                  進行中の議論を見る
+                </a>
               </div>
             </div>
           )}
@@ -203,10 +209,21 @@ function DataPageContent() {
 
       {/* Fixed panel for card detail */}
       {showCardPanel && (
-        <div className={`fixed bottom-0 left-16 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
+        <div className={`fixed bottom-16 md:bottom-0 left-0 md:left-16 right-0 md:right-[calc(50%-2rem)] border-t bg-gray-50 shadow-lg z-10 ${
           activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
         }`}>
-          <div className="p-3 md:p-4">
+          <div className="flex justify-end p-2 pb-0">
+            <button
+              onClick={() => setSelectedCard(null)}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="閉じる"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="px-3 md:px-4 pb-3 md:pb-4">
             <CardDetail card={selectedCard} />
           </div>
           <div className="p-3 md:p-4 pt-0 pb-6">
@@ -222,10 +239,21 @@ function DataPageContent() {
 
       {/* Fixed panel for area discussion */}
       {showAreaPanel && selectedAreaBounds && (
-        <div className={`fixed bottom-0 left-16 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
+        <div className={`fixed bottom-16 md:bottom-0 left-0 md:left-16 right-0 md:right-[calc(50%-2rem)] border-t bg-gray-50 shadow-lg z-10 ${
           activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
         }`}>
-          <div className="p-3 md:p-4">
+          <div className="flex justify-end p-2 pb-0">
+            <button
+              onClick={handleClearAreaSelection}
+              className="w-8 h-8 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="閉じる"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="px-3 md:px-4 pb-3 md:pb-4">
             <div className="p-3 md:p-4 bg-white border rounded-lg">
               <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2">
                 {areaName || formatCoordinates(selectedAreaBounds)}
@@ -257,7 +285,7 @@ function DataPageContent() {
       {!activeDiscussionKey && (
         <button
           onClick={() => setIsModalOpen(true)}
-          className="fixed bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center justify-center z-20"
+          className="fixed bottom-20 md:bottom-6 right-6 w-14 h-14 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 active:bg-blue-800 transition-colors flex items-center justify-center z-20"
           aria-label="新しい議論を追加"
         >
           <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -128,5 +128,19 @@
       }
     ],
     "created_at": "2026-01-05T02:42:10.825Z"
+  },
+  "pop_male_zeze": {
+    "discussion_key": "pop_male_zeze",
+    "title": "男性人口",
+    "posts": [
+      {
+        "id": "post_1767584362982",
+        "discussion_key": "pop_male_zeze",
+        "content": "📊 **男性人口**\n\n- **値**: 7350 人\n- **時点**: 2023-03-31\n- **出典**: http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf\n\n膳所学区の男性人口",
+        "created_at": "2026-01-05T03:39:22.982Z",
+        "is_auto_generated": true
+      }
+    ],
+    "created_at": "2026-01-05T03:39:22.982Z"
   }
 }
