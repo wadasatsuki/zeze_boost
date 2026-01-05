@@ -22,6 +22,7 @@ export default function AdminNewsPage() {
   const [hashtags, setHashtags] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Check if already authenticated via server session
   useEffect(() => {
@@ -93,13 +94,33 @@ export default function AdminNewsPage() {
     setLoading(false);
   }
 
+  function handleEdit(item: NewsItem) {
+    setEditingId(item.id);
+    setTitle(item.title);
+    setUrl(item.url || '');
+    setSummary(item.summary || '');
+    setHashtags(item.hashtags || '');
+    setError(null);
+    setSuccess(null);
+  }
+
+  function handleCancelEdit() {
+    setEditingId(null);
+    setTitle('');
+    setUrl('');
+    setSummary('');
+    setHashtags('');
+    setError(null);
+    setSuccess(null);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccess(null);
 
-    if (!title.trim() || !url.trim()) {
-      setError('タイトルとURLは必須です');
+    if (!title.trim()) {
+      setError('タイトルは必須です');
       return;
     }
 
@@ -110,9 +131,10 @@ export default function AdminNewsPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'create',
+          action: editingId ? 'update' : 'create',
+          id: editingId || undefined,
           title: title.trim(),
-          url: url.trim(),
+          url: url.trim() || undefined,
           summary: summary.trim() || undefined,
           hashtags: hashtags.trim() || undefined,
         }),
@@ -126,7 +148,8 @@ export default function AdminNewsPage() {
       } else if (data.error) {
         setError(data.error);
       } else if (data.newsItem) {
-        setSuccess('ニュースを作成しました');
+        setSuccess(editingId ? 'ニュースを更新しました' : 'ニュースを作成しました');
+        setEditingId(null);
         setTitle('');
         setUrl('');
         setSummary('');
@@ -134,8 +157,8 @@ export default function AdminNewsPage() {
         await loadNews();
       }
     } catch (error) {
-      setError('ニュースの作成に失敗しました');
-      console.error('Error creating news:', error);
+      setError(editingId ? 'ニュースの更新に失敗しました' : 'ニュースの作成に失敗しました');
+      console.error('Error saving news:', error);
     }
 
     setSubmitting(false);
@@ -257,9 +280,22 @@ export default function AdminNewsPage() {
           </div>
         </div>
 
-        {/* Create form */}
+        {/* Create/Edit form */}
         <div className="bg-white rounded-lg shadow p-4 md:p-6 mb-6">
-          <h2 className="text-lg font-bold mb-4">ニュースを追加</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-bold">
+              {editingId ? 'ニュースを編集' : 'ニュースを追加'}
+            </h2>
+            {editingId && (
+              <button
+                type="button"
+                onClick={handleCancelEdit}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                キャンセル
+              </button>
+            )}
+          </div>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -290,7 +326,7 @@ export default function AdminNewsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                URL <span className="text-red-500">*</span>
+                URL（任意）
               </label>
               <input
                 type="url"
@@ -298,7 +334,6 @@ export default function AdminNewsPage() {
                 onChange={(e) => setUrl(e.target.value)}
                 placeholder="https://example.com/news-article"
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                required
               />
             </div>
 
@@ -336,7 +371,9 @@ export default function AdminNewsPage() {
               disabled={submitting}
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
             >
-              {submitting ? '作成中...' : 'ニュースを作成'}
+              {submitting
+                ? (editingId ? '更新中...' : '作成中...')
+                : (editingId ? 'ニュースを更新' : 'ニュースを作成')}
             </button>
           </form>
         </div>
@@ -358,14 +395,16 @@ export default function AdminNewsPage() {
                       <h3 className="font-medium text-gray-900 truncate">
                         {item.title}
                       </h3>
-                      <a
-                        href={item.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm text-blue-600 hover:underline truncate block"
-                      >
-                        {item.url}
-                      </a>
+                      {item.url && (
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-sm text-blue-600 hover:underline truncate block"
+                        >
+                          {item.url}
+                        </a>
+                      )}
                       {item.summary && (
                         <p className="text-sm text-gray-600 mt-1">{item.summary}</p>
                       )}
@@ -383,15 +422,26 @@ export default function AdminNewsPage() {
                         )}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleDelete(item.id)}
-                      className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
-                      aria-label="Delete"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="text-blue-500 hover:text-blue-700 p-1"
+                        aria-label="Edit"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="text-red-500 hover:text-red-700 p-1"
+                        aria-label="Delete"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}

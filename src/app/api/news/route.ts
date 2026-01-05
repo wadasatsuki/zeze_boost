@@ -45,13 +45,34 @@ export async function POST(req: Request) {
     // 作成
     if (body.action === "create") {
       const { title, url, summary, hashtags } = body;
-      if (!title || !url) {
-        return NextResponse.json({ error: "title and url required" }, { status: 400 });
+      if (!title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
       }
 
       const { data, error } = await supabase
         .from("news")
-        .insert([{ title, url, summary, hashtags }])
+        .insert([{ title, url: url || null, summary, hashtags }])
+        .select()
+        .single();
+
+      if (error) throw error;
+      return NextResponse.json({ newsItem: data });
+    }
+
+    // 編集
+    if (body.action === "update") {
+      const { id, title, url, summary, hashtags } = body;
+      if (!id) {
+        return NextResponse.json({ error: "id is required" }, { status: 400 });
+      }
+      if (!title) {
+        return NextResponse.json({ error: "title is required" }, { status: 400 });
+      }
+
+      const { data, error } = await supabase
+        .from("news")
+        .update({ title, url: url || null, summary: summary || null, hashtags: hashtags || null })
+        .eq("id", id)
         .select()
         .single();
 
