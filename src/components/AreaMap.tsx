@@ -138,7 +138,7 @@ export default function AreaMap({ onAreaSelected, selectedBounds, onClearSelecti
     <div className="w-full">
       <div
         ref={containerRef}
-        className="relative w-full h-48 md:h-64 rounded-lg border overflow-hidden"
+        className="relative w-full h-64 md:h-80 rounded-lg border overflow-hidden"
       >
         {/* Google My Maps iframe */}
         <iframe
