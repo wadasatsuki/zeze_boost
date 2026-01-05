@@ -109,7 +109,7 @@ export function findAreaDiscussion(bounds: AreaBounds): Discussion | null {
 }
 
 // Create area-based discussion
-export function createAreaDiscussion(bounds: AreaBounds): Discussion {
+export function createAreaDiscussion(bounds: AreaBounds, name?: string): Discussion {
   const discussions = loadDiscussions();
   const discussionKey = generateAreaKey(bounds);
 
@@ -117,17 +117,21 @@ export function createAreaDiscussion(bounds: AreaBounds): Discussion {
   const centerLat = ((bounds.north + bounds.south) / 2).toFixed(4);
   const centerLng = ((bounds.east + bounds.west) / 2).toFixed(4);
 
+  // Use provided name or coordinates
+  const areaTitle = name || `${centerLat}, ${centerLng}`;
+  const locationInfo = name ? `${name}（${centerLat}, ${centerLng} 周辺）` : `${centerLat}, ${centerLng} 周辺`;
+
   const autoPost: Post = {
     id: `post_${Date.now()}`,
     discussion_key: discussionKey,
-    content: `📍 **選択エリアについての議論**\n\n座標: ${centerLat}, ${centerLng} 周辺\n\n**テーマ**: このエリアにはどんなお店、イベント、活動があると良いでしょうか？\n\nぜひあなたのアイデアを共有してください！`,
+    content: `📍 **${locationInfo}についての議論**\n\n**テーマ**: このエリアにはどんなお店、イベント、活動があると良いでしょうか？\n\nぜひあなたのアイデアを共有してください！`,
     created_at: new Date().toISOString(),
     is_auto_generated: true,
   };
 
   const discussion: Discussion = {
     discussion_key: discussionKey,
-    title: 'このエリアに何があるといい？',
+    title: `${areaTitle}に何があるといい？`,
     posts: [autoPost],
     created_at: new Date().toISOString(),
     area_bounds: bounds,

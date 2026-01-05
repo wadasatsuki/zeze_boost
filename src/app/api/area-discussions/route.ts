@@ -5,6 +5,7 @@ import { AreaBounds } from '@/lib/types';
 export async function POST(request: NextRequest) {
   const body = await request.json();
   const bounds: AreaBounds = body.bounds;
+  const name: string | undefined = body.name;
 
   if (!bounds || !bounds.north || !bounds.south || !bounds.east || !bounds.west) {
     return NextResponse.json({ error: 'Invalid bounds' }, { status: 400 });
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   if (!discussion) {
     // Create a new discussion for this area
-    discussion = createAreaDiscussion(bounds);
+    discussion = createAreaDiscussion(bounds, name);
   }
 
   return NextResponse.json({
