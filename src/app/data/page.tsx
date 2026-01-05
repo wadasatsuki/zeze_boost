@@ -83,37 +83,20 @@ export default function DataPage() {
       )}
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Left column: Card list + Detail + Button */}
+        {/* Left column: Card list */}
         <div
           className={`w-full md:w-1/2 flex flex-col md:border-r bg-white ${
             activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:flex' : 'flex'
           }`}
         >
-          {/* Scrollable card list */}
-          <div className="flex-1 p-3 md:p-4 overflow-y-auto">
+          {/* Scrollable card list - add bottom padding for fixed detail area */}
+          <div className={`flex-1 p-3 md:p-4 overflow-y-auto ${selectedCard ? 'pb-52 md:pb-4' : ''}`}>
             <DataCardList
               cards={cards}
               selectedCardId={selectedCard?.id || null}
               onSelectCard={handleSelectCard}
             />
           </div>
-
-          {/* Pinned detail + button at bottom */}
-          {selectedCard && (
-            <div className="border-t bg-gray-50 flex-shrink-0">
-              <div className="p-3 md:p-4">
-                <CardDetail card={selectedCard} />
-              </div>
-              <div className="p-3 md:p-4 pt-0">
-                <button
-                  onClick={handleStartDiscussion}
-                  className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm md:text-base"
-                >
-                  この課題を議論する
-                </button>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Right column: Discussion pane */}
@@ -139,6 +122,25 @@ export default function DataPage() {
           )}
         </div>
       </div>
+
+      {/* Fixed detail + button at bottom of screen */}
+      {selectedCard && (mobileView === 'list' || !activeDiscussionKey) && (
+        <div className={`fixed bottom-0 left-0 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
+          activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
+        }`}>
+          <div className="p-3 md:p-4">
+            <CardDetail card={selectedCard} />
+          </div>
+          <div className="p-3 md:p-4 pt-0 pb-safe">
+            <button
+              onClick={handleStartDiscussion}
+              className="w-full py-3 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 active:bg-blue-800 transition-colors font-medium text-sm md:text-base"
+            >
+              この課題を議論する
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
