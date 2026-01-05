@@ -1,53 +1,4 @@
 {
-  "pop_aging_rate_zeze": {
-    "discussion_key": "pop_aging_rate_zeze",
-    "title": "高齢化率（65歳以上）",
-    "posts": [
-      {
-        "id": "post_1767524565521",
-        "discussion_key": "pop_aging_rate_zeze",
-        "content": "📊 **高齢化率（65歳以上）**\n\n- **値**: 30.1 %\n- **時点**: 2023-03-31\n- **出典**: http://example.com/zeze_population.pdf\n\n3人に1人が65歳以上",
-        "created_at": "2026-01-04T11:02:45.522Z",
-        "is_auto_generated": true
-      },
-      {
-        "id": "post_1767524590699",
-        "discussion_key": "pop_aging_rate_zeze",
-        "content": "高齢者が多いのはいいとして、子どもや新規人口が増えてないのがあれだよね",
-        "created_at": "2026-01-04T11:03:10.699Z",
-        "is_auto_generated": false
-      },
-      {
-        "id": "post_1767524602689",
-        "discussion_key": "pop_aging_rate_zeze",
-        "content": "どうやったら新しい人が増えるんだろう？",
-        "created_at": "2026-01-04T11:03:22.689Z",
-        "is_auto_generated": false
-      }
-    ],
-    "created_at": "2026-01-04T11:02:45.522Z"
-  },
-  "pop_total_zeze": {
-    "discussion_key": "pop_total_zeze",
-    "title": "膳所学区の総人口",
-    "posts": [
-      {
-        "id": "post_1767524606940",
-        "discussion_key": "pop_total_zeze",
-        "content": "📊 **膳所学区の総人口**\n\n- **値**: 15437 人\n- **時点**: 2023-03-31\n- **出典**: http://example.com/zeze_population.pdf\n\n膳所学区の現在の総人口",
-        "created_at": "2026-01-04T11:03:26.940Z",
-        "is_auto_generated": true
-      },
-      {
-        "id": "post_1767524609696",
-        "discussion_key": "pop_total_zeze",
-        "content": "あああ",
-        "created_at": "2026-01-04T11:03:29.696Z",
-        "is_auto_generated": false
-      }
-    ],
-    "created_at": "2026-01-04T11:03:26.940Z"
-  },
   "area_35.0045_34.9981_135.8698_135.8663": {
     "discussion_key": "area_35.0045_34.9981_135.8698_135.8663",
     "title": "このエリアに何があるといい？",
@@ -68,53 +19,6 @@
       "west": 135.86627586206896
     }
   },
-  "area_35.0069_34.9976_135.8721_135.8656": {
-    "discussion_key": "area_35.0069_34.9976_135.8721_135.8656",
-    "title": "餃子の王将らへんに何があるといい？",
-    "posts": [
-      {
-        "id": "post_1767577067679",
-        "discussion_key": "area_35.0069_34.9976_135.8721_135.8656",
-        "content": "📍 **餃子の王将らへん（35.0023, 135.8688 周辺）についての議論**\n\n**テーマ**: このエリアにはどんなお店、イベント、活動があると良いでしょうか？\n\nぜひあなたのアイデアを共有してください！",
-        "created_at": "2026-01-05T01:37:47.680Z",
-        "is_auto_generated": true
-      },
-      {
-        "id": "post_1767577094663",
-        "discussion_key": "area_35.0069_34.9976_135.8721_135.8656",
-        "content": "もう少し気軽に入れるオープンな感じのカフェがあるといいよね",
-        "created_at": "2026-01-05T01:38:14.663Z",
-        "is_auto_generated": false
-      }
-    ],
-    "created_at": "2026-01-05T01:37:47.680Z",
-    "area_bounds": {
-      "north": 35.00690234375,
-      "south": 34.99764453125,
-      "east": 135.8721091954023,
-      "west": 135.86558620689655
-    }
-  },
-  "area_35.0077_35.0017_135.8697_135.8659": {
-    "discussion_key": "area_35.0077_35.0017_135.8697_135.8659",
-    "title": "35.0047, 135.8678に何があるといい？",
-    "posts": [
-      {
-        "id": "post_1767577388851",
-        "discussion_key": "area_35.0077_35.0017_135.8697_135.8659",
-        "content": "📍 **35.0047, 135.8678 周辺についての議論**\n\n**テーマ**: このエリアにはどんなお店、イベント、活動があると良いでしょうか？\n\nぜひあなたのアイデアを共有してください！",
-        "created_at": "2026-01-05T01:43:08.851Z",
-        "is_auto_generated": true
-      }
-    ],
-    "created_at": "2026-01-05T01:43:08.851Z",
-    "area_bounds": {
-      "north": 35.00772265625,
-      "south": 35.00174609375,
-      "east": 135.86966666666666,
-      "west": 135.8658735632184
-    }
-  },
   "free_1767580930825": {
     "discussion_key": "free_1767580930825",
     "title": "膳所駅前にどんな店が欲しい？",
@@ -129,55 +33,6 @@
     ],
     "created_at": "2026-01-05T02:42:10.825Z"
   },
-  "pop_male_zeze": {
-    "discussion_key": "pop_male_zeze",
-    "title": "男性人口",
-    "posts": [
-      {
-        "id": "post_1767584362982",
-        "discussion_key": "pop_male_zeze",
-        "content": "📊 **男性人口**\n\n- **値**: 7350 人\n- **時点**: 2023-03-31\n- **出典**: http://www.city.otsu.lg.jp/material/files/group/222/zeze.pdf\n\n膳所学区の男性人口",
-        "created_at": "2026-01-05T03:39:22.982Z",
-        "is_auto_generated": true
-      }
-    ],
-    "created_at": "2026-01-05T03:39:22.982Z"
-  },
-  "free_1767587322963": {
-    "discussion_key": "free_1767587322963",
-    "title": "琵琶湖花火大会について",
-    "posts": [
-      {
-        "id": "post_1767587322963",
-        "discussion_key": "free_1767587322963",
-        "content": "💭 **琵琶湖花火大会について**\n\nこのテーマについて自由に議論しましょう！",
-        "created_at": "2026-01-05T04:28:42.963Z",
-        "is_auto_generated": true
-      },
-      {
-        "id": "post_1767587370104",
-        "discussion_key": "free_1767587322963",
-        "content": "このニュースについてどう思う？https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
-        "created_at": "2026-01-05T04:29:30.104Z",
-        "is_auto_generated": false
-      }
-    ],
-    "created_at": "2026-01-05T04:28:42.963Z"
-  },
-  "free_1767587534935": {
-    "discussion_key": "free_1767587534935",
-    "title": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
-    "posts": [
-      {
-        "id": "post_1767587534936",
-        "discussion_key": "free_1767587534935",
-        "content": "💭 **https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html**\n\nこのテーマについて自由に議論しましょう！",
-        "created_at": "2026-01-05T04:32:14.937Z",
-        "is_auto_generated": true
-      }
-    ],
-    "created_at": "2026-01-05T04:32:14.937Z"
-  },
   "free_1767587618305": {
     "discussion_key": "free_1767587618305",
     "title": "琵琶湖花火大会の座席問題",
@@ -191,35 +46,6 @@
       }
     ],
     "created_at": "2026-01-05T04:33:38.305Z"
-  },
-  "free_1767588302405": {
-    "discussion_key": "free_1767588302405",
-    "title": "花火大会",
-    "posts": [
-      {
-        "id": "post_1767588302405",
-        "discussion_key": "free_1767588302405",
-        "content": "💭 **花火大会**\n\n🔗 関連リンク: https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html\n\nこのテーマについて自由に議論しましょう！",
-        "created_at": "2026-01-05T04:45:02.405Z",
-        "is_auto_generated": true
-      },
-      {
-        "id": "post_1767588395332",
-        "discussion_key": "free_1767588302405",
-        "content": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
-        "created_at": "2026-01-05T04:46:35.332Z",
-        "is_auto_generated": false
-      },
-      {
-        "id": "post_1767588820085",
-        "discussion_key": "free_1767588302405",
-        "content": "aa\n",
-        "created_at": "2026-01-05T04:53:40.085Z",
-        "is_auto_generated": false
-      }
-    ],
-    "created_at": "2026-01-05T04:45:02.405Z",
-    "source_url": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html"
   },
   "free_1767591904163": {
     "discussion_key": "free_1767591904163",
@@ -236,5 +62,32 @@
     "created_at": "2026-01-05T05:45:04.163Z",
     "source_url": "https://www.kyoto-np.co.jp/articles/-/1623421",
     "source_title": "大津市の進学校近くの老舗書店が「閉店」へ　121年の歴史に幕　生徒たちと結んだ強い絆「感無量」｜京都新聞デジタル　京都・滋賀のニュースサイト"
+  },
+  "area_35.0092_35.0023_135.8704_135.8658": {
+    "discussion_key": "area_35.0092_35.0023_135.8704_135.8658",
+    "title": "膳所駅前に欲しい店考えてみたに何があるといい？",
+    "posts": [
+      {
+        "id": "post_1767592993133",
+        "discussion_key": "area_35.0092_35.0023_135.8704_135.8658",
+        "content": "📍 **膳所駅前に欲しい店考えてみた（35.0057, 135.8681 周辺）についての議論**\n\n**テーマ**: このエリアにはどんなお店、イベント、活動があると良いでしょうか？\n\nぜひあなたのアイデアを共有してください！",
+        "created_at": "2026-01-05T06:03:13.133Z",
+        "is_auto_generated": true
+      },
+      {
+        "id": "post_1767593063854",
+        "discussion_key": "area_35.0092_35.0023_135.8704_135.8658",
+        "content": "カフェ、本屋、マクドかな？",
+        "created_at": "2026-01-05T06:04:23.854Z",
+        "is_auto_generated": false
+      }
+    ],
+    "created_at": "2026-01-05T06:03:13.133Z",
+    "area_bounds": {
+      "north": 35.0091875,
+      "south": 35.0022734375,
+      "east": 135.87041379310344,
+      "west": 135.86581609195403
+    }
   }
 }
