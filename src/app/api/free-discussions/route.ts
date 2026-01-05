@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
-import { createFreeDiscussion } from '@/lib/discussions';
+import { createClient } from '@supabase/supabase-js';
+
+export const runtime = 'nodejs';
+
+function supabaseAdmin() {
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) {
+    throw new Error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY is missing');
+  }
+  return createClient(url, key, { auth: { persistSession: false } });
+}
 
 // Helper function to fetch page title from URL
 async function fetchPageTitle(url: string): Promise<string | null> {
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
 
     const response = await fetch(url, {
       signal: controller.signal,
@@ -56,8 +67,8 @@ export async function POST(request: Request) {
     }
 
     // Validate sourceUrl if provided
-    let validatedSourceUrl: string | undefined;
-    let sourceTitle: string | undefined;
+    let validatedSourceUrl: string | null = null;
+    let sourceTitle: string | null = null;
 
     if (sourceUrl && typeof sourceUrl === 'string' && sourceUrl.trim()) {
       try {
@@ -74,7 +85,44 @@ export async function POST(request: Request) {
       }
     }
 
-    const discussion = createFreeDiscussion(title.trim(), validatedSourceUrl, sourceTitle);
+    const supabase = supabaseAdmin();
+    const discussionKey = `free_${Date.now()}`;
+
+    // Create discussion
+    const { data: discussion, error: discussionError } = await supabase
+      .from('discussions')
+      .insert([{
+        discussion_key: discussionKey,
+        title: title.trim(),
+        created_at: new Date().toISOString(),
+        source_url: validatedSourceUrl,
+        source_title: sourceTitle
+      }])
+      .select()
+      .single();
+
+    if (discussionError) {
+      console.error('Error creating discussion:', discussionError);
+      return NextResponse.json({ error: 'Failed to create discussion' }, { status: 500 });
+    }
+
+    // Create auto-generated first post
+    let autoPostContent = `💭 **${title.trim()}**\n\nこのテーマについて自由に議論しましょう！`;
+    if (validatedSourceUrl) {
+      const linkText = sourceTitle || validatedSourceUrl;
+      autoPostContent = `💭 **${title.trim()}**\n\n🔗 関連リンク: ${linkText}\n\nこのテーマについて自由に議論しましょう！`;
+    }
+
+    const postId = `post_${Date.now()}`;
+    await supabase
+      .from('posts')
+      .insert([{
+        post_id: postId,
+        discussion_key: discussionKey,
+        content: autoPostContent,
+        is_auto_generated: true,
+        created_at: new Date().toISOString()
+      }]);
 
     return NextResponse.json({
       discussion_key: discussion.discussion_key,
