@@ -74,7 +74,7 @@ export default function AdminNewsPage() {
     setSuccess(null);
 
     if (!title.trim() || !url.trim()) {
-      setError('Title and URL are required');
+      setError('タイトルとURLは必須です');
       return;
     }
 
@@ -98,7 +98,7 @@ export default function AdminNewsPage() {
       if (data.error) {
         setError(data.error);
       } else if (data.newsItem) {
-        setSuccess('News item created successfully');
+        setSuccess('ニュースを作成しました');
         setTitle('');
         setUrl('');
         setSummary('');
@@ -106,7 +106,7 @@ export default function AdminNewsPage() {
         await loadNews();
       }
     } catch (error) {
-      setError('Failed to create news item');
+      setError('ニュースの作成に失敗しました');
       console.error('Error creating news:', error);
     }
 
@@ -114,7 +114,7 @@ export default function AdminNewsPage() {
   }
 
   async function handleDelete(newsId: string) {
-    if (!confirm('Are you sure you want to delete this news item?')) {
+    if (!confirm('このニュースを削除してもよろしいですか？')) {
       return;
     }
 
@@ -153,7 +153,7 @@ export default function AdminNewsPage() {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
         <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm">
-          <h1 className="text-xl font-bold mb-6 text-center">Admin Login</h1>
+          <h1 className="text-xl font-bold mb-6 text-center">管理者ログイン</h1>
 
           {loginError && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -192,7 +192,7 @@ export default function AdminNewsPage() {
               type="submit"
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
             >
-              Login
+              ログイン
             </button>
           </form>
         </div>
@@ -204,18 +204,26 @@ export default function AdminNewsPage() {
     <div className="min-h-screen bg-gray-100 p-4 md:p-6">
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">News Admin</h1>
-          <button
-            onClick={handleLogout}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-colors"
-          >
-            Logout
-          </button>
+          <h1 className="text-2xl font-bold">ニュース管理</h1>
+          <div className="flex items-center gap-2">
+            <a
+              href="/admin/moderation"
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              モデレーション
+            </a>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-colors"
+            >
+              ログアウト
+            </button>
+          </div>
         </div>
 
         {/* Create form */}
         <div className="bg-white rounded-lg shadow p-4 md:p-6 mb-6">
-          <h2 className="text-lg font-bold mb-4">Add News Topic</h2>
+          <h2 className="text-lg font-bold mb-4">ニュースを追加</h2>
 
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
@@ -232,13 +240,13 @@ export default function AdminNewsPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Title <span className="text-red-500">*</span>
+                タイトル <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                placeholder="News title"
+                placeholder="ニュースのタイトル"
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
               />
@@ -260,12 +268,12 @@ export default function AdminNewsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Summary (optional)
+                概要（任意）
               </label>
               <textarea
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
-                placeholder="Brief summary of the news..."
+                placeholder="ニュースの概要..."
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                 rows={3}
               />
@@ -273,7 +281,7 @@ export default function AdminNewsPage() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Hashtags (optional)
+                ハッシュタグ（任意）
               </label>
               <input
                 type="text"
@@ -283,7 +291,7 @@ export default function AdminNewsPage() {
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Separate with commas or spaces
+                カンマまたはスペースで区切ってください
               </p>
             </div>
 
@@ -292,19 +300,19 @@ export default function AdminNewsPage() {
               disabled={submitting}
               className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
             >
-              {submitting ? 'Creating...' : 'Create News Topic'}
+              {submitting ? '作成中...' : 'ニュースを作成'}
             </button>
           </form>
         </div>
 
         {/* News list */}
         <div className="bg-white rounded-lg shadow p-4 md:p-6">
-          <h2 className="text-lg font-bold mb-4">News Topics ({news.length})</h2>
+          <h2 className="text-lg font-bold mb-4">ニュース一覧 ({news.length}件)</h2>
 
           {loading ? (
-            <p className="text-gray-500">Loading...</p>
+            <p className="text-gray-500">読み込み中...</p>
           ) : news.length === 0 ? (
-            <p className="text-gray-500">No news topics yet</p>
+            <p className="text-gray-500">ニュースがありません</p>
           ) : (
             <div className="space-y-4">
               {news.map((item) => (
@@ -335,7 +343,7 @@ export default function AdminNewsPage() {
                       <p className="text-xs text-gray-400 mt-2">
                         {formatDate(item.created_at)}
                         {item.discussion_key && (
-                          <span className="ml-2 text-green-600">Has discussion</span>
+                          <span className="ml-2 text-green-600">議論あり</span>
                         )}
                       </p>
                     </div>

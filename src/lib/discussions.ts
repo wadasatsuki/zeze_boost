@@ -177,3 +177,46 @@ export function createFreeDiscussion(title: string, sourceUrl?: string, sourceTi
 
   return discussion;
 }
+
+// Delete a discussion
+export function deleteDiscussion(discussionKey: string): boolean {
+  const discussions = loadDiscussions();
+
+  if (!discussions[discussionKey]) {
+    return false;
+  }
+
+  delete discussions[discussionKey];
+  saveDiscussions(discussions);
+
+  return true;
+}
+
+// Delete a post from a discussion
+export function deletePost(discussionKey: string, postId: string): boolean {
+  const discussions = loadDiscussions();
+  const discussion = discussions[discussionKey];
+
+  if (!discussion) {
+    return false;
+  }
+
+  const postIndex = discussion.posts.findIndex((p) => p.id === postId);
+
+  if (postIndex === -1) {
+    return false;
+  }
+
+  discussion.posts.splice(postIndex, 1);
+  saveDiscussions(discussions);
+
+  return true;
+}
+
+// Get all discussions as array (sorted by newest first)
+export function getAllDiscussions(): Discussion[] {
+  const discussions = loadDiscussions();
+  return Object.values(discussions).sort(
+    (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+  );
+}
