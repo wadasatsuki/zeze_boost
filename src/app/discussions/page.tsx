@@ -41,8 +41,9 @@ function DiscussionsPageContent() {
     try {
       const res = await fetch('/api/discussions');
       const data = await res.json();
-      setDiscussions(data.discussions);
-      return data.discussions;
+      const discussions = data.discussions ?? [];
+      setDiscussions(discussions);
+      return discussions;
     } catch (error) {
       console.error('Error loading discussions:', error);
       return [];
