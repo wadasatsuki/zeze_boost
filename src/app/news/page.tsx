@@ -60,7 +60,7 @@ export default function NewsPage() {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <header className="bg-white border-b p-3 md:p-4">
-          <h1 className="text-lg md:text-xl font-bold">News Topics</h1>
+          <h1 className="text-lg md:text-xl font-bold">ニュース一覧</h1>
         </header>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">Loading...</p>
@@ -72,14 +72,14 @@ export default function NewsPage() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-100 flex flex-col">
       <header className="bg-white border-b p-3 md:p-4 flex-shrink-0">
-        <h1 className="text-lg md:text-xl font-bold">News Topics</h1>
+        <h1 className="text-lg md:text-xl font-bold">ニュース一覧</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-6">
         {news.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-4xl mb-4">📰</p>
-            <p className="text-gray-500">No news topics yet</p>
+            <p className="text-gray-500">ニュースがありません</p>
           </div>
         ) : (
           <div className="max-w-2xl mx-auto space-y-4">
@@ -114,20 +114,31 @@ export default function NewsPage() {
                       <span className="text-xs text-gray-400">
                         {formatDate(item.created_at)}
                       </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDiscuss(item);
-                        }}
-                        disabled={discussingId === item.id}
-                        className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
-                      >
-                        {discussingId === item.id
-                          ? '...'
-                          : item.discussion_key
-                          ? '議論を見る'
-                          : '議論する'}
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            router.push(`/news/${item.id}`);
+                          }}
+                          className="px-4 py-2 bg-gray-100 text-gray-700 text-sm rounded-lg hover:bg-gray-200 transition-colors"
+                        >
+                          詳細を確認
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDiscuss(item);
+                          }}
+                          disabled={discussingId === item.id}
+                          className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
+                        >
+                          {discussingId === item.id
+                            ? '...'
+                            : item.discussion_key
+                            ? '議論を見る'
+                            : '議論する'}
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
