@@ -142,5 +142,83 @@
       }
     ],
     "created_at": "2026-01-05T03:39:22.982Z"
+  },
+  "free_1767587322963": {
+    "discussion_key": "free_1767587322963",
+    "title": "琵琶湖花火大会について",
+    "posts": [
+      {
+        "id": "post_1767587322963",
+        "discussion_key": "free_1767587322963",
+        "content": "💭 **琵琶湖花火大会について**\n\nこのテーマについて自由に議論しましょう！",
+        "created_at": "2026-01-05T04:28:42.963Z",
+        "is_auto_generated": true
+      },
+      {
+        "id": "post_1767587370104",
+        "discussion_key": "free_1767587322963",
+        "content": "このニュースについてどう思う？https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
+        "created_at": "2026-01-05T04:29:30.104Z",
+        "is_auto_generated": false
+      }
+    ],
+    "created_at": "2026-01-05T04:28:42.963Z"
+  },
+  "free_1767587534935": {
+    "discussion_key": "free_1767587534935",
+    "title": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
+    "posts": [
+      {
+        "id": "post_1767587534936",
+        "discussion_key": "free_1767587534935",
+        "content": "💭 **https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html**\n\nこのテーマについて自由に議論しましょう！",
+        "created_at": "2026-01-05T04:32:14.937Z",
+        "is_auto_generated": true
+      }
+    ],
+    "created_at": "2026-01-05T04:32:14.937Z"
+  },
+  "free_1767587618305": {
+    "discussion_key": "free_1767587618305",
+    "title": "琵琶湖花火大会の座席問題",
+    "posts": [
+      {
+        "id": "post_1767587618305",
+        "discussion_key": "free_1767587618305",
+        "content": "💭 **琵琶湖花火大会の座席問題**\n\nこのテーマについて自由に議論しましょう！",
+        "created_at": "2026-01-05T04:33:38.305Z",
+        "is_auto_generated": true
+      }
+    ],
+    "created_at": "2026-01-05T04:33:38.305Z"
+  },
+  "free_1767588302405": {
+    "discussion_key": "free_1767588302405",
+    "title": "花火大会",
+    "posts": [
+      {
+        "id": "post_1767588302405",
+        "discussion_key": "free_1767588302405",
+        "content": "💭 **花火大会**\n\n🔗 関連リンク: https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html\n\nこのテーマについて自由に議論しましょう！",
+        "created_at": "2026-01-05T04:45:02.405Z",
+        "is_auto_generated": true
+      },
+      {
+        "id": "post_1767588395332",
+        "discussion_key": "free_1767588302405",
+        "content": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html",
+        "created_at": "2026-01-05T04:46:35.332Z",
+        "is_auto_generated": false
+      },
+      {
+        "id": "post_1767588820085",
+        "discussion_key": "free_1767588302405",
+        "content": "aa\n",
+        "created_at": "2026-01-05T04:53:40.085Z",
+        "is_auto_generated": false
+      }
+    ],
+    "created_at": "2026-01-05T04:45:02.405Z",
+    "source_url": "https://www.asahi.com/articles/ASR847T4ZR82PTJB002.html"
   }
 }

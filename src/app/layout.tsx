@@ -14,8 +14,30 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "https://zeze-boost.vercel.app"),
   title: "ZEZE BOOST",
-  description: "滋賀県大津市膳所地域のデータカードを閲覧し、議論を始めることができます",
+  description: "膳所の未来をみんなで考えよう - 滋賀県大津市膳所地域について議論をかわしましょう",
+  openGraph: {
+    title: "ZEZE BOOST",
+    description: "膳所の未来をみんなで考えよう - 滋賀県大津市膳所地域について議論をかわしましょう",
+    type: "website",
+    locale: "ja_JP",
+    siteName: "ZEZE BOOST",
+    images: [
+      {
+        url: "/photo/top_1.jpg",
+        width: 1200,
+        height: 630,
+        alt: "ZEZE BOOST - 膳所の未来をみんなで考えよう",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ZEZE BOOST",
+    description: "膳所の未来をみんなで考えよう - 滋賀県大津市膳所地域について議論をかわしましょう",
+    images: ["/photo/top_1.jpg"],
+  },
 };
 
 export const viewport: Viewport = {

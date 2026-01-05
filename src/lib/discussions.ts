@@ -54,7 +54,7 @@ export function createDiscussion(card: DataCard): Discussion {
   return discussion;
 }
 
-export function addPost(discussionKey: string, content: string): Post | null {
+export function addPost(discussionKey: string, content: string, imageUrl?: string): Post | null {
   const discussions = loadDiscussions();
   const discussion = discussions[discussionKey];
 
@@ -68,6 +68,7 @@ export function addPost(discussionKey: string, content: string): Post | null {
     content,
     created_at: new Date().toISOString(),
     is_auto_generated: false,
+    image_url: imageUrl,
   };
 
   discussion.posts.push(post);
@@ -143,15 +144,21 @@ export function createAreaDiscussion(bounds: AreaBounds, name?: string): Discuss
   return discussion;
 }
 
-// Create free-form discussion with just a title
-export function createFreeDiscussion(title: string): Discussion {
+// Create free-form discussion with just a title and optional source URL
+export function createFreeDiscussion(title: string, sourceUrl?: string, sourceTitle?: string): Discussion {
   const discussions = loadDiscussions();
   const discussionKey = `free_${Date.now()}`;
+
+  let autoPostContent = `💭 **${title}**\n\nこのテーマについて自由に議論しましょう！`;
+  if (sourceUrl) {
+    const linkText = sourceTitle || sourceUrl;
+    autoPostContent = `💭 **${title}**\n\n🔗 関連リンク: ${linkText}\n\nこのテーマについて自由に議論しましょう！`;
+  }
 
   const autoPost: Post = {
     id: `post_${Date.now()}`,
     discussion_key: discussionKey,
-    content: `💭 **${title}**\n\nこのテーマについて自由に議論しましょう！`,
+    content: autoPostContent,
     created_at: new Date().toISOString(),
     is_auto_generated: true,
   };
@@ -161,6 +168,8 @@ export function createFreeDiscussion(title: string): Discussion {
     title,
     posts: [autoPost],
     created_at: new Date().toISOString(),
+    source_url: sourceUrl,
+    source_title: sourceTitle,
   };
 
   discussions[discussionKey] = discussion;

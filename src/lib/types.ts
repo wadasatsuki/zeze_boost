@@ -17,6 +17,7 @@ export interface Post {
   content: string;
   created_at: string;
   is_auto_generated: boolean;
+  image_url?: string;
 }
 
 export interface Discussion {
@@ -25,6 +26,8 @@ export interface Discussion {
   posts: Post[];
   created_at: string;
   area_bounds?: AreaBounds;
+  source_url?: string;
+  source_title?: string;
 }
 
 export interface AreaBounds {

@@ -6,11 +6,12 @@ import Link from 'next/link';
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (title: string) => void;
+  onSubmit: (title: string, sourceUrl?: string) => void;
 }
 
 export default function NewDiscussionModal({ isOpen, onClose, onSubmit }: Props) {
   const [title, setTitle] = useState('');
+  const [sourceUrl, setSourceUrl] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
@@ -20,8 +21,9 @@ export default function NewDiscussionModal({ isOpen, onClose, onSubmit }: Props)
     if (!title.trim()) return;
 
     setIsSubmitting(true);
-    await onSubmit(title.trim());
+    await onSubmit(title.trim(), sourceUrl.trim() || undefined);
     setTitle('');
+    setSourceUrl('');
     setIsSubmitting(false);
   };
 
@@ -42,22 +44,38 @@ export default function NewDiscussionModal({ isOpen, onClose, onSubmit }: Props)
         </div>
 
         <form onSubmit={handleSubmit}>
-          <div className="p-4">
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
-              テーマ・タイトル
-            </label>
-            <input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="例: 膳所駅前の活性化について"
-              className="w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              autoFocus
-            />
-            <p className="mt-2 text-xs text-gray-500">
-              自由にテーマを設定して議論を始めることができます
-            </p>
+          <div className="p-4 space-y-4">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+                テーマ・タイトル
+              </label>
+              <input
+                id="title"
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="例: 膳所駅前の活性化について"
+                className="w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                autoFocus
+              />
+            </div>
+
+            <div>
+              <label htmlFor="sourceUrl" className="block text-sm font-medium text-gray-700 mb-2">
+                関連URL（任意）
+              </label>
+              <input
+                id="sourceUrl"
+                type="url"
+                value={sourceUrl}
+                onChange={(e) => setSourceUrl(e.target.value)}
+                placeholder="https://example.com/news-article"
+                className="w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                ニュース記事などのURLを入力すると、議論の参考として表示されます
+              </p>
+            </div>
           </div>
 
           <div className="p-4 border-t flex flex-col gap-2">

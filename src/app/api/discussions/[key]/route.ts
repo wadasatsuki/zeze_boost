@@ -36,7 +36,8 @@ export async function POST(
   }
 
   if (body.action === 'post') {
-    const post = addPost(key, body.content);
+    const imageUrl = body.imageUrl && typeof body.imageUrl === 'string' ? body.imageUrl : undefined;
+    const post = addPost(key, body.content, imageUrl);
 
     if (!post) {
       return NextResponse.json({ error: 'Discussion not found' }, { status: 404 });

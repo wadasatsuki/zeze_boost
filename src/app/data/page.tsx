@@ -105,12 +105,12 @@ function DataPageContent() {
   }
 
   // Handle creating free-form discussion
-  async function handleCreateFreeDiscussion(title: string) {
+  async function handleCreateFreeDiscussion(title: string, sourceUrl?: string) {
     try {
       const res = await fetch('/api/free-discussions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ title, sourceUrl }),
       });
       const data = await res.json();
 
