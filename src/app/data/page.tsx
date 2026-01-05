@@ -16,6 +16,7 @@ export default function DataPage() {
 
   // Area selection state
   const [selectedAreaBounds, setSelectedAreaBounds] = useState<AreaBounds | null>(null);
+  const [areaName, setAreaName] = useState('');
   const [isAreaDiscussion, setIsAreaDiscussion] = useState(false);
 
   useEffect(() => {
@@ -50,12 +51,14 @@ export default function DataPage() {
 
   function handleAreaSelected(bounds: AreaBounds) {
     setSelectedAreaBounds(bounds);
+    setAreaName('');
     // Clear card selection when selecting an area
     setSelectedCard(null);
   }
 
   function handleClearAreaSelection() {
     setSelectedAreaBounds(null);
+    setAreaName('');
   }
 
   async function handleStartAreaDiscussion() {
@@ -65,7 +68,7 @@ export default function DataPage() {
       const res = await fetch('/api/area-discussions', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bounds: selectedAreaBounds }),
+        body: JSON.stringify({ bounds: selectedAreaBounds, name: areaName || undefined }),
       });
       const data = await res.json();
 
@@ -77,6 +80,13 @@ export default function DataPage() {
     } catch (error) {
       console.error('Error starting area discussion:', error);
     }
+  }
+
+  // Format coordinates for display
+  function formatCoordinates(bounds: AreaBounds): string {
+    const centerLat = ((bounds.north + bounds.south) / 2).toFixed(4);
+    const centerLng = ((bounds.east + bounds.west) / 2).toFixed(4);
+    return `${centerLat}, ${centerLng}`;
   }
 
   if (loading) {
@@ -93,10 +103,11 @@ export default function DataPage() {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
+      {/* Page header */}
       <header className="bg-white border-b p-3 md:p-4">
-        <h1 className="text-lg md:text-xl font-bold">膳所学区 データ閲覧・議論</h1>
+        <h1 className="text-lg md:text-xl font-bold">データ閲覧</h1>
         <p className="text-xs md:text-sm text-gray-500 hidden sm:block">
-          滋賀県大津市膳所地域のデータカードを閲覧し、議論を始めることができます
+          データカードを閲覧し、議論を始めることができます
         </p>
       </header>
 
@@ -201,18 +212,24 @@ export default function DataPage() {
       )}
 
       {/* Fixed panel for area discussion */}
-      {showAreaPanel && (
+      {showAreaPanel && selectedAreaBounds && (
         <div className={`fixed bottom-0 left-0 right-0 md:right-1/2 border-t bg-gray-50 shadow-lg z-10 ${
           activeDiscussionKey && mobileView === 'discussion' ? 'hidden md:block' : ''
         }`}>
           <div className="p-3 md:p-4">
             <div className="p-3 md:p-4 bg-white border rounded-lg">
-              <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2">選択したエリア</h2>
+              <h2 className="text-base md:text-xl font-bold mb-1.5 md:mb-2">
+                {areaName || formatCoordinates(selectedAreaBounds)}
+              </h2>
+              <input
+                type="text"
+                value={areaName}
+                onChange={(e) => setAreaName(e.target.value)}
+                placeholder="エリアの名前を入力（任意）"
+                className="w-full p-2 border rounded-lg text-sm mb-2 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+              />
               <p className="text-sm md:text-base text-gray-600">
                 このエリアにはどんなお店、イベント、活動があると良いでしょうか？
-              </p>
-              <p className="text-xs text-gray-400 mt-1">
-                地図で選択した範囲について議論できます
               </p>
             </div>
           </div>

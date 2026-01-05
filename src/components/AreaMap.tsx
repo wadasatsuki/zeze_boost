@@ -140,14 +140,20 @@ export default function AreaMap({ onAreaSelected, selectedBounds, onClearSelecti
         ref={containerRef}
         className="relative w-full h-64 md:h-80 rounded-lg border overflow-hidden"
       >
-        {/* Google My Maps iframe */}
-        <iframe
-          src={MY_MAPS_EMBED_URL}
-          className="w-full h-full border-0"
-          allowFullScreen
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-        />
+        {/* Google My Maps iframe with header cropped */}
+        <div className="absolute inset-0 overflow-hidden">
+          <iframe
+            src={MY_MAPS_EMBED_URL}
+            className="absolute w-full border-0"
+            style={{
+              top: '-55px',
+              height: 'calc(100% + 55px)',
+            }}
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+          />
+        </div>
 
         {/* Selection overlay */}
         {showOverlay && (
