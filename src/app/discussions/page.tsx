@@ -162,7 +162,7 @@ function DiscussionsPageContent() {
                     </div>
                     <div className="flex items-center justify-between">
                       <p className="text-sm text-gray-500">
-                        {discussion.posts.length} 件の投稿
+                        {(discussion.posts ?? []).length} 件の投稿
                       </p>
                       <span className="text-xs text-gray-400">
                         {formatDate(discussion.created_at)}
@@ -401,7 +401,7 @@ function DiscussionDetail({
       <div className="flex-1 overflow-y-auto overflow-x-hidden pb-32">
         {activeTab === 'comments' ? (
           <div className="p-4 space-y-4">
-            {discussion.posts.map((post) => (
+            {(discussion.posts ?? []).map((post) => (
               <PostCard key={post.id} post={post} />
             ))}
           </div>
@@ -425,7 +425,7 @@ function DiscussionDetail({
               作成日: {new Date(discussion.created_at).toLocaleDateString('ja-JP')}
             </p>
             <p className="text-sm text-gray-600 mt-1">
-              投稿数: {discussion.posts.length}件
+              投稿数: {(discussion.posts ?? []).length}件
             </p>
           </div>
         )}

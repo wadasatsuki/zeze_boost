@@ -306,7 +306,7 @@ export default function ModerationPage() {
                           {discussion.title}
                         </h3>
                         <p className="text-sm text-gray-500">
-                          {discussion.posts.length}件の投稿
+                          {(discussion.posts ?? []).length}件の投稿
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
                           {formatDate(discussion.created_at)}
