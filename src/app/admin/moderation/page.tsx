@@ -135,7 +135,7 @@ export default function ModerationPage() {
 
       const data = await res.json();
 
-      if (data.success) {
+      if (data.ok) {
         await loadDiscussions();
         if (selectedDiscussion?.discussion_key === discussionKey) {
           setSelectedDiscussion(null);
@@ -166,7 +166,7 @@ export default function ModerationPage() {
 
       const data = await res.json();
 
-      if (data.success) {
+      if (data.ok) {
         // Reload the discussion to get updated posts
         await handleViewDiscussion(discussionKey);
         await loadDiscussions();
