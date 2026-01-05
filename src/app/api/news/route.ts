@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { isAdminAuthenticated } from "@/lib/auth";
 
 export const runtime = "nodejs"; // Vercel安定用
 
@@ -29,9 +30,15 @@ export async function GET() {
   }
 }
 
-// 作成・削除
+// 作成・削除 (要認証)
 export async function POST(req: Request) {
   try {
+    // Check admin authentication
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const supabase = supabaseAdmin();
     const body = await req.json();
 

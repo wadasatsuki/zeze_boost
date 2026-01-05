@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { getAllDiscussions, getDiscussion, deleteDiscussion, deletePost } from '@/lib/discussions';
+import { isAdminAuthenticated } from '@/lib/auth';
 
-// GET - List all discussions
+// GET - List all discussions (要認証)
 export async function GET() {
   try {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const discussions = getAllDiscussions();
     return NextResponse.json({ discussions });
   } catch (error) {
@@ -12,9 +18,14 @@ export async function GET() {
   }
 }
 
-// POST - Moderation actions
+// POST - Moderation actions (要認証)
 export async function POST(request: Request) {
   try {
+    const isAuth = await isAdminAuthenticated();
+    if (!isAuth) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     const body = await request.json();
 
     // Get discussion details

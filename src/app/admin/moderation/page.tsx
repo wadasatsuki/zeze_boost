@@ -3,28 +3,22 @@
 import { useState, useEffect } from 'react';
 import { Discussion, Post } from '@/lib/types';
 
-const ADMIN_ID = 'zeze_boost';
-const ADMIN_PASSWORD = 'satsuki19980526';
-
 export default function ModerationPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [loginId, setLoginId] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'detail'>('list');
 
-  // Check if already authenticated
+  // Check if already authenticated via server session
   useEffect(() => {
-    const auth = sessionStorage.getItem('admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
-    setAuthChecking(false);
+    checkSession();
   }, []);
 
   useEffect(() => {
@@ -33,26 +27,63 @@ export default function ModerationPage() {
     }
   }, [isAuthenticated]);
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginError(null);
-
-    if (loginId === ADMIN_ID && loginPassword === ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin_auth', 'true');
-      setIsAuthenticated(true);
-    } else {
-      setLoginError('IDまたはパスワードが正しくありません');
+  async function checkSession() {
+    try {
+      const res = await fetch('/api/admin/session');
+      const data = await res.json();
+      setIsAuthenticated(data.authenticated === true);
+    } catch (error) {
+      console.error('Session check error:', error);
+      setIsAuthenticated(false);
     }
+    setAuthChecking(false);
   }
 
-  function handleLogout() {
-    sessionStorage.removeItem('admin_auth');
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError(null);
+    setLoggingIn(true);
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: loginId, password: loginPassword }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setIsAuthenticated(true);
+      } else {
+        setLoginError(data.error || 'IDまたはパスワードが正しくありません');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('ログインに失敗しました');
+    }
+
+    setLoggingIn(false);
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setIsAuthenticated(false);
   }
 
   async function loadDiscussions() {
     try {
       const res = await fetch('/api/moderation');
+
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const data = await res.json();
       setDiscussions(data.discussions || []);
     } catch (error) {
@@ -68,6 +99,12 @@ export default function ModerationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'get_discussion', discussionKey }),
       });
+
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const data = await res.json();
 
       if (data.discussion) {
@@ -90,6 +127,12 @@ export default function ModerationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'delete_discussion', discussionKey }),
       });
+
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const data = await res.json();
 
       if (data.success) {
@@ -115,6 +158,12 @@ export default function ModerationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'delete_post', discussionKey, postId }),
       });
+
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        return;
+      }
+
       const data = await res.json();
 
       if (data.success) {
@@ -169,6 +218,7 @@ export default function ModerationPage() {
                 onChange={(e) => setLoginId(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loggingIn}
               />
             </div>
 
@@ -182,14 +232,16 @@ export default function ModerationPage() {
                 onChange={(e) => setLoginPassword(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loggingIn}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              disabled={loggingIn}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
             >
-              ログイン
+              {loggingIn ? 'ログイン中...' : 'ログイン'}
             </button>
           </form>
         </div>

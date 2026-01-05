@@ -3,15 +3,13 @@
 import { useState, useEffect } from 'react';
 import { NewsItem } from '@/lib/types';
 
-const ADMIN_ID = 'zeze_boost';
-const ADMIN_PASSWORD = 'satsuki19980526';
-
 export default function AdminNewsPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authChecking, setAuthChecking] = useState(true);
   const [loginId, setLoginId] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState<string | null>(null);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const [news, setNews] = useState<NewsItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -25,13 +23,9 @@ export default function AdminNewsPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
-  // Check if already authenticated
+  // Check if already authenticated via server session
   useEffect(() => {
-    const auth = sessionStorage.getItem('admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
-    setAuthChecking(false);
+    checkSession();
   }, []);
 
   useEffect(() => {
@@ -40,20 +34,51 @@ export default function AdminNewsPage() {
     }
   }, [isAuthenticated]);
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
-    setLoginError(null);
-
-    if (loginId === ADMIN_ID && loginPassword === ADMIN_PASSWORD) {
-      sessionStorage.setItem('admin_auth', 'true');
-      setIsAuthenticated(true);
-    } else {
-      setLoginError('IDまたはパスワードが正しくありません');
+  async function checkSession() {
+    try {
+      const res = await fetch('/api/admin/session');
+      const data = await res.json();
+      setIsAuthenticated(data.authenticated === true);
+    } catch (error) {
+      console.error('Session check error:', error);
+      setIsAuthenticated(false);
     }
+    setAuthChecking(false);
   }
 
-  function handleLogout() {
-    sessionStorage.removeItem('admin_auth');
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError(null);
+    setLoggingIn(true);
+
+    try {
+      const res = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: loginId, password: loginPassword }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setIsAuthenticated(true);
+      } else {
+        setLoginError(data.error || 'IDまたはパスワードが正しくありません');
+      }
+    } catch (error) {
+      console.error('Login error:', error);
+      setLoginError('ログインに失敗しました');
+    }
+
+    setLoggingIn(false);
+  }
+
+  async function handleLogout() {
+    try {
+      await fetch('/api/admin/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
     setIsAuthenticated(false);
   }
 
@@ -95,7 +120,10 @@ export default function AdminNewsPage() {
 
       const data = await res.json();
 
-      if (data.error) {
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        setError('セッションが切れました。再度ログインしてください。');
+      } else if (data.error) {
         setError(data.error);
       } else if (data.newsItem) {
         setSuccess('ニュースを作成しました');
@@ -127,10 +155,13 @@ export default function AdminNewsPage() {
 
       const data = await res.json();
 
-      if (data.ok) {
+      if (res.status === 401) {
+        setIsAuthenticated(false);
+        setError('セッションが切れました。再度ログインしてください。');
+      } else if (data.ok) {
         await loadNews();
       } else {
-        console.error(`Deleete failed:`, data);
+        console.error('Delete failed:', data);
       }
     } catch (error) {
       console.error('Error deleting news:', error);
@@ -174,6 +205,7 @@ export default function AdminNewsPage() {
                 onChange={(e) => setLoginId(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loggingIn}
               />
             </div>
 
@@ -187,14 +219,16 @@ export default function AdminNewsPage() {
                 onChange={(e) => setLoginPassword(e.target.value)}
                 className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 required
+                disabled={loggingIn}
               />
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+              disabled={loggingIn}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
             >
-              ログイン
+              {loggingIn ? 'ログイン中...' : 'ログイン'}
             </button>
           </form>
         </div>
