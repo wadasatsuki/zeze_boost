@@ -1,0 +1,360 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import { NewsItem } from '@/lib/types';
+
+const ADMIN_ID = 'zeze_boost';
+const ADMIN_PASSWORD = 'satsuki19980526';
+
+export default function AdminNewsPage() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authChecking, setAuthChecking] = useState(true);
+  const [loginId, setLoginId] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  // Form state
+  const [title, setTitle] = useState('');
+  const [url, setUrl] = useState('');
+  const [summary, setSummary] = useState('');
+  const [hashtags, setHashtags] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+
+  // Check if already authenticated
+  useEffect(() => {
+    const auth = sessionStorage.getItem('admin_auth');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+    setAuthChecking(false);
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      loadNews();
+    }
+  }, [isAuthenticated]);
+
+  function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError(null);
+
+    if (loginId === ADMIN_ID && loginPassword === ADMIN_PASSWORD) {
+      sessionStorage.setItem('admin_auth', 'true');
+      setIsAuthenticated(true);
+    } else {
+      setLoginError('IDまたはパスワードが正しくありません');
+    }
+  }
+
+  function handleLogout() {
+    sessionStorage.removeItem('admin_auth');
+    setIsAuthenticated(false);
+  }
+
+  async function loadNews() {
+    try {
+      const res = await fetch('/api/news');
+      const data = await res.json();
+      setNews(data.news || []);
+    } catch (error) {
+      console.error('Error loading news:', error);
+    }
+    setLoading(false);
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    if (!title.trim() || !url.trim()) {
+      setError('Title and URL are required');
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const res = await fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'create',
+          title: title.trim(),
+          url: url.trim(),
+          summary: summary.trim() || undefined,
+          hashtags: hashtags.trim() || undefined,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        setError(data.error);
+      } else if (data.newsItem) {
+        setSuccess('News item created successfully');
+        setTitle('');
+        setUrl('');
+        setSummary('');
+        setHashtags('');
+        await loadNews();
+      }
+    } catch (error) {
+      setError('Failed to create news item');
+      console.error('Error creating news:', error);
+    }
+
+    setSubmitting(false);
+  }
+
+  async function handleDelete(newsId: string) {
+    if (!confirm('Are you sure you want to delete this news item?')) {
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/news', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete', newsId }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        await loadNews();
+      }
+    } catch (error) {
+      console.error('Error deleting news:', error);
+    }
+  }
+
+  function formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleString('ja-JP');
+  }
+
+  // Show loading while checking auth
+  if (authChecking) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
+
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow p-6 w-full max-w-sm">
+          <h1 className="text-xl font-bold mb-6 text-center">Admin Login</h1>
+
+          {loginError && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              {loginError}
+            </div>
+          )}
+
+          <form onSubmit={handleLogin} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                ID
+              </label>
+              <input
+                type="text"
+                value={loginId}
+                onChange={(e) => setLoginId(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Password
+              </label>
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-medium transition-colors"
+            >
+              Login
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-100 p-4 md:p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">News Admin</h1>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-200 rounded-lg transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Create form */}
+        <div className="bg-white rounded-lg shadow p-4 md:p-6 mb-6">
+          <h2 className="text-lg font-bold mb-4">Add News Topic</h2>
+
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-lg text-sm">
+              {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="mb-4 p-3 bg-green-50 text-green-600 rounded-lg text-sm">
+              {success}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="News title"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                URL <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="url"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                placeholder="https://example.com/news-article"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Summary (optional)
+              </label>
+              <textarea
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                placeholder="Brief summary of the news..."
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                rows={3}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Hashtags (optional)
+              </label>
+              <input
+                type="text"
+                value={hashtags}
+                onChange={(e) => setHashtags(e.target.value)}
+                placeholder="fireworks, event, zeze"
+                className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Separate with commas or spaces
+              </p>
+            </div>
+
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 font-medium transition-colors"
+            >
+              {submitting ? 'Creating...' : 'Create News Topic'}
+            </button>
+          </form>
+        </div>
+
+        {/* News list */}
+        <div className="bg-white rounded-lg shadow p-4 md:p-6">
+          <h2 className="text-lg font-bold mb-4">News Topics ({news.length})</h2>
+
+          {loading ? (
+            <p className="text-gray-500">Loading...</p>
+          ) : news.length === 0 ? (
+            <p className="text-gray-500">No news topics yet</p>
+          ) : (
+            <div className="space-y-4">
+              {news.map((item) => (
+                <div key={item.id} className="border rounded-lg p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">
+                        {item.title}
+                      </h3>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm text-blue-600 hover:underline truncate block"
+                      >
+                        {item.url}
+                      </a>
+                      {item.summary && (
+                        <p className="text-sm text-gray-600 mt-1">{item.summary}</p>
+                      )}
+                      {item.hashtags && (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {item.hashtags.split(/[,\s]+/).filter(Boolean).map(tag =>
+                            tag.startsWith('#') ? tag : `#${tag}`
+                          ).join(' ')}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-400 mt-2">
+                        {formatDate(item.created_at)}
+                        {item.discussion_key && (
+                          <span className="ml-2 text-green-600">Has discussion</span>
+                        )}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-red-500 hover:text-red-700 p-1 flex-shrink-0"
+                      aria-label="Delete"
+                    >
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

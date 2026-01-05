@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Discussion, Post } from '@/lib/types';
 import NewDiscussionModal from '@/components/NewDiscussionModal';
 
-export default function DiscussionsPage() {
+function DiscussionsPageContent() {
   const [discussions, setDiscussions] = useState<Discussion[]>([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -14,6 +14,7 @@ export default function DiscussionsPage() {
   const [selectedDiscussion, setSelectedDiscussion] = useState<Discussion | null>(null);
   const [mobileView, setMobileView] = useState<'list' | 'detail'>('list');
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   async function handleCreateFreeDiscussion(title: string, sourceUrl?: string) {
     try {
@@ -51,6 +52,15 @@ export default function DiscussionsPage() {
   useEffect(() => {
     loadDiscussions().then(() => setLoading(false));
   }, []);
+
+  // Handle key query parameter (from news page)
+  useEffect(() => {
+    const key = searchParams.get('key');
+    if (key && !loading) {
+      setSelectedDiscussionKey(key);
+      setMobileView('detail');
+    }
+  }, [searchParams, loading]);
 
   // Load selected discussion details
   useEffect(() => {
@@ -547,5 +557,17 @@ function PostCard({ post }: { post: Post }) {
         </div>
       )}
     </div>
+  );
+}
+
+export default function DiscussionsPage() {
+  return (
+    <Suspense fallback={
+      <div className="h-screen w-screen flex items-center justify-center bg-gray-100">
+        <p className="text-gray-500">読み込み中...</p>
+      </div>
+    }>
+      <DiscussionsPageContent />
+    </Suspense>
   );
 }

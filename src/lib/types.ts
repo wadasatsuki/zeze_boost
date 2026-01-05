@@ -42,3 +42,13 @@ export interface AreaDiscussionInfo {
   bounds: AreaBounds;
   title: string;
 }
+
+export interface NewsItem {
+  id: string;
+  title: string;
+  url: string;
+  summary?: string;
+  hashtags?: string;
+  discussion_key?: string;
+  created_at: string;
+}
