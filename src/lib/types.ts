@@ -24,4 +24,18 @@ export interface Discussion {
   title: string;
   posts: Post[];
   created_at: string;
+  area_bounds?: AreaBounds;
+}
+
+export interface AreaBounds {
+  north: number;
+  south: number;
+  east: number;
+  west: number;
+}
+
+export interface AreaDiscussionInfo {
+  discussion_key: string;
+  bounds: AreaBounds;
+  title: string;
 }
