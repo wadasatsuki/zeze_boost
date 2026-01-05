@@ -40,7 +40,7 @@ export default function NewDiscussionModal({ isOpen, onClose, onSubmit }: Props)
     >
       <div className="bg-white rounded-xl shadow-xl w-full max-w-md">
         <div className="p-4 border-b">
-          <h2 className="text-lg font-bold">新しい議論を始める</h2>
+          <h2 className="text-lg font-bold text-gray-900">新しい議論を始める</h2>
         </div>
 
         <form onSubmit={handleSubmit}>

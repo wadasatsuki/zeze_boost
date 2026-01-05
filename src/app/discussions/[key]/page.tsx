@@ -168,7 +168,7 @@ export default function DiscussionDetailPage({ params }: Props) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="font-bold text-base flex-1 truncate">{discussion.title}</h2>
+          <h2 className="font-bold text-base flex-1 truncate text-gray-900">{discussion.title}</h2>
           <button
             onClick={handleShareOnX}
             className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
@@ -234,7 +234,7 @@ export default function DiscussionDetailPage({ params }: Props) {
           </div>
         ) : (
           <div className="p-4">
-            <h3 className="text-lg font-bold mb-2">{discussion.title}</h3>
+            <h3 className="text-lg font-bold mb-2 text-gray-900">{discussion.title}</h3>
             {discussion.source_url && (
               <p className="text-sm text-gray-600 mb-2">
                 <span className="font-medium">関連URL:</span>{' '}

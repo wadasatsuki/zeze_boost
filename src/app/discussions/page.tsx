@@ -108,7 +108,7 @@ function DiscussionsPageContent() {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <header className="bg-white border-b p-3 md:p-4">
-          <h1 className="text-lg md:text-xl font-bold">進行中の議論一覧</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900">進行中の議論一覧</h1>
         </header>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">読み込み中...</p>
@@ -120,7 +120,7 @@ function DiscussionsPageContent() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-100 flex flex-col">
       <header className="bg-white border-b p-3 md:p-4 flex-shrink-0">
-        <h1 className="text-lg md:text-xl font-bold">進行中の議論一覧</h1>
+        <h1 className="text-lg md:text-xl font-bold text-gray-900">進行中の議論一覧</h1>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -341,7 +341,7 @@ function DiscussionDetail({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h2 className="font-bold text-base flex-1 truncate">{discussion.title}</h2>
+          <h2 className="font-bold text-base flex-1 truncate text-gray-900">{discussion.title}</h2>
           <button
             onClick={handleShareOnX}
             className="w-8 h-8 bg-black rounded-full flex items-center justify-center hover:bg-gray-800 transition-colors flex-shrink-0"
@@ -407,7 +407,7 @@ function DiscussionDetail({
           </div>
         ) : (
           <div className="p-4">
-            <h3 className="text-lg font-bold mb-2">{discussion.title}</h3>
+            <h3 className="text-lg font-bold mb-2 text-gray-900">{discussion.title}</h3>
             {discussion.source_url && (
               <p className="text-sm text-gray-600 mb-2">
                 <span className="font-medium">関連URL:</span>{' '}

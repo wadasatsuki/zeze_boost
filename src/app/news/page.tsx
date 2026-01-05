@@ -60,7 +60,7 @@ export default function NewsPage() {
     return (
       <div className="min-h-screen bg-gray-100 flex flex-col">
         <header className="bg-white border-b p-3 md:p-4">
-          <h1 className="text-lg md:text-xl font-bold">ニュース一覧</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900">ニュース一覧</h1>
         </header>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">Loading...</p>
@@ -72,7 +72,7 @@ export default function NewsPage() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-gray-100 flex flex-col">
       <header className="bg-white border-b p-3 md:p-4 flex-shrink-0">
-        <h1 className="text-lg md:text-xl font-bold">ニュース一覧</h1>
+        <h1 className="text-lg md:text-xl font-bold text-gray-900">ニュース一覧</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-6">

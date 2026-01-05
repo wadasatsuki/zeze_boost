@@ -78,7 +78,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-lg md:text-xl font-bold">ニュース詳細</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900">ニュース詳細</h1>
         </header>
         <div className="flex-1 flex items-center justify-center">
           <p className="text-gray-500">読み込み中...</p>
@@ -99,7 +99,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
-          <h1 className="text-lg md:text-xl font-bold">ニュース詳細</h1>
+          <h1 className="text-lg md:text-xl font-bold text-gray-900">ニュース詳細</h1>
         </header>
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
@@ -122,7 +122,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </button>
-        <h1 className="text-lg md:text-xl font-bold truncate">ニュース詳細</h1>
+        <h1 className="text-lg md:text-xl font-bold truncate text-gray-900">ニュース詳細</h1>
       </header>
 
       <div className="flex-1 overflow-y-auto">
