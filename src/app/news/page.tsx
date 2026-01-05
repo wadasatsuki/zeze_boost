@@ -86,7 +86,8 @@ export default function NewsPage() {
             {news.map((item) => (
               <div
                 key={item.id}
-                className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow"
+                onClick={() => router.push(`/news/${item.id}`)}
+                className="bg-white rounded-lg shadow p-4 hover:shadow-md transition-shadow cursor-pointer"
               >
                 <div className="flex items-start gap-3">
                   <span className="text-2xl flex-shrink-0">📰</span>
@@ -94,16 +95,8 @@ export default function NewsPage() {
                     <h2 className="font-medium text-gray-900 mb-1">
                       {item.title}
                     </h2>
-                    <a
-                      href={item.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-sm text-blue-600 hover:underline truncate block mb-2"
-                    >
-                      {item.url}
-                    </a>
                     {item.summary && (
-                      <p className="text-sm text-gray-600 mb-2">{item.summary}</p>
+                      <p className="text-sm text-gray-600 mb-2 line-clamp-2">{item.summary}</p>
                     )}
                     {item.hashtags && (
                       <div className="flex flex-wrap gap-1 mb-2">
@@ -122,7 +115,10 @@ export default function NewsPage() {
                         {formatDate(item.created_at)}
                       </span>
                       <button
-                        onClick={() => handleDiscuss(item)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDiscuss(item);
+                        }}
                         disabled={discussingId === item.id}
                         className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
                       >
