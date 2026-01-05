@@ -122,13 +122,15 @@ export default function AdminNewsPage() {
       const res = await fetch('/api/news', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'delete', newsId }),
+        body: JSON.stringify({ action: 'delete', id: newsId }),
       });
 
       const data = await res.json();
 
-      if (data.success) {
+      if (data.ok) {
         await loadNews();
+      } else {
+        console.error(`Deleete failed:`, data);
       }
     } catch (error) {
       console.error('Error deleting news:', error);
